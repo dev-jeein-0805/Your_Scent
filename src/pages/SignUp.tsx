@@ -2,13 +2,17 @@ import { useState } from "react";
 import { join } from "../api/firebase";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
 
   const onChange = (event: any) => {
     const {
       target: { name, value },
     } = event;
+    if (name === "username") {
+      setUsername(value);
+    }
     if (name === "email") {
       setEmail(value);
     }
@@ -19,7 +23,7 @@ const SignUp = () => {
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    await join(email, password);
+    await join(username, email, password);
   };
 
   return (
@@ -31,7 +35,11 @@ const SignUp = () => {
             <input
               className="w-80 h-8 pl-2 pb-2 border-b-2 border-white-500 bg-loginColor focus:outline-none focus:border-red-500"
               type="text"
+              value={username}
+              name="username"
+              onChange={onChange}
               placeholder="Name"
+              required
             />
           </div>
           <div className="p-2">

@@ -10,6 +10,8 @@ import NewProduct from "./pages/NewProduct.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import MyCart from "./pages/MyCart.tsx";
 import SignUp from "./pages/SignUp.tsx";
+import Login from "./pages/Login.tsx";
+import { AuthContextProvider } from "./contexts/AuthContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,10 @@ const router = createBrowserRouter([
         path: "/signup",
         element: <SignUp />,
       },
+      {
+        path: "/login",
+        element: <Login />,
+      },
     ],
   },
 ]);
@@ -42,6 +48,8 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthContextProvider>
+      <RouterProvider router={router} />
+    </AuthContextProvider>
   </React.StrictMode>
 );
