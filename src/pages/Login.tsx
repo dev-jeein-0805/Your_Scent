@@ -19,6 +19,8 @@ const Login = () => {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     await signIn(email, password, dispatch, navigate);
+    dispatch({ type: "SET_USER", payload: { email } }); // 로그인 시 사용자 정보 설정
+    alert("로그인 성공! 메인페이지로 이동합니다.");
   };
 
   return (

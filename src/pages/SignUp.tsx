@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { join } from "../api/firebase";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const navigate = useNavigate();
 
   const onChange = (event: any) => {
     const {
@@ -23,7 +25,7 @@ const SignUp = () => {
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    await join(username, email, password);
+    await join(username, email, password, navigate);
   };
 
   return (
