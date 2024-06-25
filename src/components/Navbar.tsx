@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { useAuthDispatch, useAuthState } from "../contexts/AuthContext";
+import { UserInfo } from "../contexts/AuthContext";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -18,18 +19,24 @@ export default function Navbar() {
 
   console.log(user);
 
+  // Firebase 인증 상태 변화를 감지하여 user 상태를 업데이트
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const user: UserInfo = { email: firebaseUser.email || "" };
+        dispatch({ type: "SET_USER", payload: user }); // authState.user를 업데이트
       } else {
         setUser(null);
+        dispatch({ type: "LOGOUT" }); // authState.user를 null로 업데이트
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [dispatch]);
+
+  console.log(authState.user); // 로그인 상태 확인
 
   const handleLogout = async () => {
     try {

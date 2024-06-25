@@ -4,7 +4,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  User,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import {
@@ -16,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { Dispatch } from "react";
 import { AuthAction } from "../contexts/AuthContext";
+import { UserInfo } from "../contexts/AuthContext";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
@@ -35,7 +35,8 @@ console.log("app", app);
 export const join = async (
   username: string,
   email: string,
-  password: string
+  password: string,
+  navigate: Function
 ) => {
   if (!email || !password || !username) {
     alert("이름과 이메일, 비밀번호를 필수로 입력해 주세요.");
@@ -63,7 +64,8 @@ export const join = async (
     console.log("Firestore에 사용자 정보 저장 성공"); // 디버깅 로그 추가
 
     // 저장이 성공하면 성공 alert를 사용자에게 보여준다.
-    alert("회원가입에 성공하셨습니다. 로그인 해주세요.");
+    alert("회원가입에 성공하셨습니다.");
+    navigate("/");
   } catch (error) {
     console.error(error);
     console.error("회원가입 중 오류 발생:", error); // 디버깅 로그 추가
@@ -108,7 +110,7 @@ export const signIn = async (
     const docSnap = await getDoc(docRef);
     // 문서가 존재하는지 확인
     if (docSnap.exists()) {
-      dispatch({ type: "SET_USER", payload: docSnap.data() as User });
+      dispatch({ type: "SET_USER", payload: docSnap.data() as UserInfo }); // 타입 캐스팅
     } else {
       console.log("No such document!");
     }
@@ -128,8 +130,11 @@ export const logOut = async (
   try {
     await signOut(auth);
     dispatch({ type: "SET_USER", payload: null });
+    dispatch({ type: "SET_EMAIL", payload: "" }); // 이메일 상태 초기화
+    dispatch({ type: "SET_PASSWORD", payload: "" }); // 비밀번호 상태 초기화
     localStorage.removeItem("user"); // 로컬 스토리지에서 사용자 정보 제거
-    navigate("/login");
+    navigate("/");
+    alert("로그아웃 되었습니다. 메인 페이지로 이동합니다.");
   } catch (error) {
     alert("로그아웃 실패");
   }

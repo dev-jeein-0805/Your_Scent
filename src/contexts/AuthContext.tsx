@@ -5,20 +5,27 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { User } from "firebase/auth";
+
+export interface UserInfo {
+  email: string;
+  // password: string;
+  // username : string;
+}
 
 // 상태 타입 정의
 interface AuthState {
   email: string;
   password: string;
-  user: User | null;
+  user: UserInfo | null;
 }
 
 // 액션 타입 정의
 export type AuthAction =
-  | { type: "SET_USER" | "LOGOUT"; payload: User | null }
+  | { type: "SET_USER"; payload: UserInfo | null } // user 상태 업데이트
+  | { type: "LOGOUT" }
   | { type: "SET_EMAIL"; payload: string }
-  | { type: "SET_PASSWORD"; payload: string };
+  | { type: "SET_PASSWORD"; payload: string }
+  | { type: "RESET_AUTH" }; // user 상태 초기화
 
 // 초기 상태 정의
 const initialState: AuthState = {
@@ -30,20 +37,22 @@ const initialState: AuthState = {
 // 리듀서 정의
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "SET_USER":
+    case "SET_USER": // 로그인 이후 user 상태 업데이트
       return {
         ...state,
-        user: action.payload || null,
+        user: action.payload,
       };
     case "LOGOUT":
       return {
         ...state,
         user: null,
       };
-    // case "SET_EMAIL":
-    //   return { ...state, email: action.payload };
-    // case "SET_PASSWORD":
-    //   return { ...state, password: action.payload };
+    case "SET_EMAIL":
+      return { ...state, email: action.payload };
+    case "SET_PASSWORD":
+      return { ...state, password: action.payload };
+    case "RESET_AUTH": // 상태 초기화(로그아웃)
+      return { email: "", password: "", user: null }; // user 속성 초기화
     default:
       return state;
   }
