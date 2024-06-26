@@ -8,10 +8,15 @@ import Home from "./pages/Home.tsx";
 import AllProducts from "./pages/AllProducts.tsx";
 import NewProduct from "./pages/NewProduct.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
-import MyCart from "./pages/MyCart.tsx";
+import Cart from "./pages/Cart.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import { AuthContextProvider } from "./contexts/AuthContext.tsx";
+import Category from "./pages/Category.tsx";
+import Order from "./pages/Order.tsx";
+import MyPage from "./pages/MyPage.tsx";
+import EditProfile from "./pages/EditProfile.tsx";
+import OrderHistory from "./pages/OrderHistory.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,26 +25,27 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, path: "/", element: <Home /> },
-      { path: "/products", element: <AllProducts /> },
-      {
-        path: "/products/new",
-        element: <NewProduct />,
-      },
+      { path: "/signup", element: <SignUp /> },
+      { path: "/login", element: <Login /> },
+      { path: "/category/:id", element: <Category /> },
       {
         path: "products/:id",
         element: <ProductDetail />,
       },
+      { path: "/order", element: <Order /> },
       {
-        path: "/carts",
-        element: <MyCart />,
-      },
-      {
-        path: "/signup",
-        element: <SignUp />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
+        path: "/mypage",
+        element: <MyPage />,
+        children: [
+          { path: "editProfile", element: <EditProfile /> },
+          { path: "orderHistory", element: <OrderHistory /> },
+          { path: "cart", element: <Cart /> },
+          {
+            path: "products/new",
+            element: <NewProduct />,
+          },
+          { path: "products", element: <AllProducts /> },
+        ],
       },
     ],
   },

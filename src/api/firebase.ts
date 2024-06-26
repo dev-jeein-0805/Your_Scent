@@ -3,12 +3,13 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
   signOut,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import {
   getFirestore,
-  collection,
+  // collection,
   doc,
   setDoc,
   getDoc,
@@ -26,8 +27,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-const db = getFirestore(app);
-const USER_COLLECTION = collection(db, "users");
+export const db = getFirestore(app); // Firestore 초기화 코드
+// const USER_COLLECTION = collection(db, "users");
 
 console.log("app", app);
 
@@ -36,6 +37,7 @@ export const join = async (
   username: string,
   email: string,
   password: string,
+  isSeller: boolean,
   navigate: Function
 ) => {
   if (!email || !password || !username) {
@@ -53,11 +55,20 @@ export const join = async (
     const user = credential.user;
     console.log("Firebase에 회원가입 성공:", user); // 디버깅 로그 추가
 
-    const userDoc = doc(USER_COLLECTION, user.uid);
+    // const userDoc = doc(USER_COLLECTION, user.uid);
     // 해당 문서에 아래와 같은 정보를 저장한다.
-    await setDoc(userDoc, {
-      uid: user.uid,
-      email,
+    // await setDoc(userDoc, {
+    //   uid: user.uid,
+    //   email,
+    //   username,
+    //   isSeller,
+    //   created_at: Date.now(),
+    // });
+
+    // Firestore에 사용자 데이터 저장
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      isSeller,
       username,
       created_at: Date.now(),
     });
@@ -65,7 +76,13 @@ export const join = async (
 
     // 저장이 성공하면 성공 alert를 사용자에게 보여준다.
     alert("회원가입에 성공하셨습니다.");
-    navigate("/");
+
+    // 자동 로그인 후 메인 페이지로 이동
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
   } catch (error) {
     console.error(error);
     console.error("회원가입 중 오류 발생:", error); // 디버깅 로그 추가
