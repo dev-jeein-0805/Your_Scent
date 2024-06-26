@@ -8,6 +8,7 @@ import {
 
 export interface UserInfo {
   email: string;
+  isSeller: boolean;
   // password: string;
   // username : string;
 }
@@ -17,6 +18,7 @@ interface AuthState {
   email: string;
   password: string;
   user: UserInfo | null;
+  isSeller: boolean;
 }
 
 // 액션 타입 정의
@@ -25,6 +27,7 @@ export type AuthAction =
   | { type: "LOGOUT" }
   | { type: "SET_EMAIL"; payload: string }
   | { type: "SET_PASSWORD"; payload: string }
+  | { type: "SET_IS_SELLER"; payload: boolean }
   | { type: "RESET_AUTH" }; // user 상태 초기화
 
 // 초기 상태 정의
@@ -32,10 +35,12 @@ const initialState: AuthState = {
   email: "",
   password: "",
   user: null,
+  isSeller: false,
 };
 
 // 리듀서 정의
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  console.log("Action received in reducer:", action);
   switch (action.type) {
     case "SET_USER": // 로그인 이후 user 상태 업데이트
       return {
@@ -51,8 +56,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return { ...state, email: action.payload };
     case "SET_PASSWORD":
       return { ...state, password: action.payload };
+    case "SET_IS_SELLER":
+      return { ...state, isSeller: action.payload };
     case "RESET_AUTH": // 상태 초기화(로그아웃)
-      return { email: "", password: "", user: null }; // user 속성 초기화
+      return { email: "", password: "", user: null, isSeller: false }; // user 속성 초기화
     default:
       return state;
   }

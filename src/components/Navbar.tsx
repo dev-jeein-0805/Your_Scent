@@ -1,34 +1,50 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BsFillPencilFill } from "react-icons/bs";
 import { RiFlowerFill } from "react-icons/ri";
-import { logOut } from "../api/firebase";
+import { auth, logOut } from "../api/firebase";
 import {
-  getAuth,
+  // getAuth,
   onAuthStateChanged,
   User as FirebaseUser,
 } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { useAuthDispatch, useAuthState } from "../contexts/AuthContext";
 import { UserInfo } from "../contexts/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../api/firebase";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isSeller, setIsSeller] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
   const authState = useAuthState();
 
-  console.log(user);
+  console.log("user:", user);
+  console.log("isSeller:", isSeller);
 
   // Firebase 인증 상태 변화를 감지하여 user 상태를 업데이트
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    // const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const user: UserInfo = { email: firebaseUser.email || "" };
-        dispatch({ type: "SET_USER", payload: user }); // authState.user를 업데이트
+
+        // Firestore에서 사용자 데이터 가져오기
+        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setIsSeller(userData.isSeller);
+
+          const user: UserInfo = {
+            email: firebaseUser.email || "",
+            isSeller: userData.isSeller,
+          };
+          dispatch({ type: "SET_USER", payload: user }); // authState.user를 업데이트
+        }
       } else {
         setUser(null);
+        setIsSeller(false);
         dispatch({ type: "LOGOUT" }); // authState.user를 null로 업데이트
       }
     });
@@ -53,13 +69,16 @@ export default function Navbar() {
         <h1>Your Scent</h1>
       </Link>
       <nav className="flex items-center gap-4 font-semibold">
-        <Link to="/products">Products</Link>
-        <Link to="/carts">Carts</Link>
-        <Link to="/products/new" className="text-2xl">
-          <BsFillPencilFill />
-        </Link>
         {authState.user ? (
-          <button onClick={handleLogout}>Logout</button>
+          <>
+            <Link to="/products">Products</Link>
+            <Link to="/products/new" className="text-2xl">
+              <BsFillPencilFill />
+            </Link>
+            <Link to="/cart">Cart</Link>
+            <Link to="/mypage">My Page</Link>
+            <button onClick={handleLogout}>Logout</button>
+          </>
         ) : (
           <>
             <Link to="/signup">Sign Up</Link>
