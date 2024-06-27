@@ -46,11 +46,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return {
         ...state,
         user: action.payload,
+        isSeller: action.payload?.isSeller || false,
       };
     case "LOGOUT":
       return {
         ...state,
         user: null,
+        isSeller: false,
       };
     case "SET_EMAIL":
       return { ...state, email: action.payload };

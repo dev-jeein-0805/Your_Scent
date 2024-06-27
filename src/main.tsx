@@ -17,6 +17,7 @@ import Order from "./pages/Order.tsx";
 import MyPage from "./pages/MyPage.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
 import OrderHistory from "./pages/OrderHistory.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,16 +36,31 @@ const router = createBrowserRouter([
       { path: "/order", element: <Order /> },
       {
         path: "/mypage",
-        element: <MyPage />,
+        element: (
+          <ProtectedRoute>
+            <MyPage />
+          </ProtectedRoute>
+        ),
         children: [
           { path: "editProfile", element: <EditProfile /> },
           { path: "orderHistory", element: <OrderHistory /> },
           { path: "cart", element: <Cart /> },
           {
             path: "products/new",
-            element: <NewProduct />,
+            element: (
+              <ProtectedRoute allowedRoles={["seller"]}>
+                <NewProduct />
+              </ProtectedRoute>
+            ),
           },
-          { path: "products", element: <AllProducts /> },
+          {
+            path: "products",
+            element: (
+              <ProtectedRoute allowedRoles={["seller"]}>
+                <AllProducts />
+              </ProtectedRoute>
+            ),
+          },
         ],
       },
     ],
