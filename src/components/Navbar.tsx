@@ -71,11 +71,11 @@ export default function Navbar() {
       <nav className="flex items-center gap-4 font-semibold">
         {authState.user ? (
           <>
-            <Link to="/products">Products</Link>
-            <Link to="/products/new" className="text-2xl">
+            <Link to="products">Products</Link>
+            <Link to="products/new" className="text-2xl">
               <BsFillPencilFill />
             </Link>
-            <Link to="/cart">Cart</Link>
+            <Link to="cart">Cart</Link>
             <Link to="/mypage">My Page</Link>
             <button onClick={handleLogout}>Logout</button>
           </>
