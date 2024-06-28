@@ -14,6 +14,7 @@ import {
   setDoc,
   getDoc,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { Dispatch } from "react";
 import { AuthAction } from "../contexts/AuthContext";
 import { UserInfo } from "../contexts/AuthContext";
@@ -23,12 +24,14 @@ const firebaseConfig = {
   authDomain: import.meta.env.VITE_APP_FIREBASE_AUTH_DOMAIN,
   databaseURL: import.meta.env.VITE_APP_FIREBASE_DB_URL,
   projectId: import.meta.env.VITE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGE_BUCKET,
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app); // Firestore 초기화 코드
 // const USER_COLLECTION = collection(db, "users");
+export const storage = getStorage(app);
 
 console.log("app", app);
 

@@ -63,6 +63,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+input {
+  @apply p-4 outline-none border border-gray-300 my-1;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
