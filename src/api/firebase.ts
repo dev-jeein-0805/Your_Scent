@@ -13,6 +13,9 @@ import {
   doc,
   setDoc,
   getDoc,
+  Timestamp,
+  // collection,
+  // getDocs,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { Dispatch } from "react";
@@ -58,22 +61,12 @@ export const join = async (
     const user = credential.user;
     console.log("Firebase에 회원가입 성공:", user); // 디버깅 로그 추가
 
-    // const userDoc = doc(USER_COLLECTION, user.uid);
-    // 해당 문서에 아래와 같은 정보를 저장한다.
-    // await setDoc(userDoc, {
-    //   uid: user.uid,
-    //   email,
-    //   username,
-    //   isSeller,
-    //   created_at: Date.now(),
-    // });
-
     // Firestore에 사용자 데이터 저장
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       isSeller,
       username,
-      created_at: Date.now(),
+      createdAt: Timestamp.now().toDate(),
     });
     console.log("Firestore에 사용자 정보 저장 성공"); // 디버깅 로그 추가
 
@@ -159,3 +152,11 @@ export const logOut = async (
     alert("로그아웃 실패");
   }
 };
+
+// 컬렉션의 모든 문서 가져오기
+// export const getProducts = async (): Promise<Product[]> => {
+//   const querySnapshot = await getDocs(collection(db, "products"));
+//   querySnapshot.forEach((doc) => {
+//     console.log(doc.id, " => ", doc.data());
+//   });
+// };

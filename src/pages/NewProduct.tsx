@@ -1,7 +1,9 @@
 import { useState, ChangeEvent } from "react";
 import FileUpload, { uploadFiles } from "../components/FileUpload";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../api/firebase";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { db, storage } from "../api/firebase";
+import { RiDeleteBin5Fill } from "react-icons/ri";
+import { deleteObject, ref } from "firebase/storage";
 
 interface Product {
   title: string;
@@ -11,7 +13,7 @@ interface Product {
   description: string;
   options: string[];
   imageUrls?: string[];
-  // 다른 필요한 속성들...
+  createdAt: Timestamp;
 }
 
 export default function NewProduct() {
@@ -22,6 +24,7 @@ export default function NewProduct() {
     category: "",
     description: "",
     options: [],
+    createdAt: Timestamp.now(),
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
@@ -52,6 +55,39 @@ export default function NewProduct() {
     }
   };
 
+  // Firebase Storage에서 이미지를 삭제하는 함수
+  const deleteImage = async (imageUrl: string) => {
+    try {
+      console.log("삭제할 이미지 URL:", imageUrl);
+      if (!imageUrl) {
+        throw new Error("올바르지 않은 이미지 URL입니다.");
+      }
+      const imageRef = ref(storage, imageUrl);
+      await deleteObject(imageRef);
+      console.log("이미지가 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("이미지 삭제 실패", error);
+    }
+  };
+
+  // 이미지 삭제 핸들러
+  const handleRemoveImage = async (index: number) => {
+    const imageUrlToRemove = uploadedUrls[index];
+
+    // URL이 설정되었는지 확인
+    if (!imageUrlToRemove) {
+      console.error("이미지 URL이 설정되지 않았습니다.");
+      return;
+    }
+
+    // Firebase Storage에서 이미지 삭제
+    await deleteImage(imageUrlToRemove);
+
+    // Client 단 이미지 업로드 상태 업데이트
+    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setUploadedUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+  };
+
   // 제품 등록 로직
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +101,11 @@ export default function NewProduct() {
     setIsUploading(true);
 
     try {
-      const productData = { ...product, imageUrls: uploadedUrls };
+      const productData = {
+        ...product,
+        imageUrls: uploadedUrls,
+        createdAt: Timestamp.now().toDate(),
+      };
 
       // Firestore에 제품 데이터 저장
       await addDoc(collection(db, "products"), productData);
@@ -78,6 +118,7 @@ export default function NewProduct() {
         category: "",
         description: "",
         options: [],
+        createdAt: Timestamp.now(),
       });
       setSelectedFiles([]);
       setUploadedUrls([]);
@@ -97,12 +138,19 @@ export default function NewProduct() {
           {selectedFiles.length > 0 && (
             <div className="flex flex-wrap">
               {selectedFiles.map((file, index) => (
-                <img
-                  key={index}
-                  className="w-48 mx-2 my-2"
-                  src={URL.createObjectURL(file)}
-                  alt={`local file ${index + 1}`}
-                />
+                <div key={index} className="relative w-48 mx-2 my-2">
+                  <img
+                    className="w-full"
+                    src={URL.createObjectURL(file)}
+                    alt={`local file ${index + 1}`}
+                  />
+                  <button
+                    className="absolute top-1.5 right-1.5 bg-black text-white rounded-full p-1"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <RiDeleteBin5Fill />
+                  </button>
+                </div>
               ))}
             </div>
           )}
