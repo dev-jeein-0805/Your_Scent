@@ -159,3 +159,12 @@ export const logOut = async (
     alert("로그아웃 실패");
   }
 };
+
+// export const getProducts = async () => {
+//   return getDoc(ref(db, 'products')).then((snapshot) => {
+//     if(snapshot.exists()) {
+//       return Object.values(snapshot.val());
+//     }
+//     return [];
+//   })
+// }
