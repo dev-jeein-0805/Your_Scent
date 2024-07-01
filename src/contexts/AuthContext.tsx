@@ -40,7 +40,7 @@ const initialState: AuthState = {
 
 // 리듀서 정의
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  console.log("Action received in reducer:", action);
+  // console.log("Action received in reducer:", action);
   switch (action.type) {
     case "SET_USER": // 로그인 이후 user 상태 업데이트
       return {

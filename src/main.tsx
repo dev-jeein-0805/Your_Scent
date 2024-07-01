@@ -18,6 +18,8 @@ import MyPage from "./pages/MyPage.tsx";
 import EditProfile from "./pages/EditProfile.tsx";
 import OrderHistory from "./pages/OrderHistory.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import EditProduct from "./pages/EditProduct.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   {
@@ -61,17 +63,29 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: "products/edit/:id",
+            element: (
+              <ProtectedRoute allowedRoles={["seller"]}>
+                <EditProduct />
+              </ProtectedRoute>
+            ),
+          },
         ],
       },
     ],
   },
 ]);
 
+const queryClient = new QueryClient();
+
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
-    <AuthContextProvider>
-      <RouterProvider router={router} />
-    </AuthContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+      </AuthContextProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

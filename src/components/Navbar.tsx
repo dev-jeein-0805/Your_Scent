@@ -20,8 +20,8 @@ export default function Navbar() {
   const dispatch = useAuthDispatch();
   const authState = useAuthState();
 
-  console.log("user:", user);
-  console.log("isSeller:", isSeller);
+  // console.log("user:", user);
+  // console.log("isSeller:", isSeller);
 
   // Firebase 인증 상태 변화를 감지하여 user 상태를 업데이트
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function Navbar() {
     return () => unsubscribe();
   }, [dispatch]);
 
-  console.log(authState.user); // 로그인 상태 확인
+  // console.log(authState.user); // 로그인 상태 확인
 
   const handleLogout = async () => {
     try {

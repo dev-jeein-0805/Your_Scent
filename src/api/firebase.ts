@@ -36,7 +36,7 @@ export const db = getFirestore(app); // Firestore 초기화 코드
 // const USER_COLLECTION = collection(db, "users");
 export const storage = getStorage(app);
 
-console.log("app", app);
+// console.log("app", app);
 
 // 회원가입
 export const join = async (
@@ -152,11 +152,3 @@ export const logOut = async (
     alert("로그아웃 실패");
   }
 };
-
-// 컬렉션의 모든 문서 가져오기
-// export const getProducts = async (): Promise<Product[]> => {
-//   const querySnapshot = await getDocs(collection(db, "products"));
-//   querySnapshot.forEach((doc) => {
-//     console.log(doc.id, " => ", doc.data());
-//   });
-// };
