@@ -131,7 +131,7 @@ const NewProduct = () => {
 
   return (
     <section className="w-full text-center">
-      <h2 className="text-2xl font-bold my-4">판매 상품 추가/수정</h2>
+      <h2 className="text-2xl font-bold my-4">판매 상품 등록</h2>
       {success && <p className="my-2">✅{success}</p>}
       <div className="flex justify-center">
         <div className="w-1/2 border-2 ml-10 relative">
