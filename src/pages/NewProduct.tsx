@@ -16,7 +16,7 @@ interface Product {
   createdAt: Timestamp;
 }
 
-export default function NewProduct() {
+const NewProduct = () => {
   const [product, setProduct] = useState<Product>({
     title: "",
     amount: 0,
@@ -216,4 +216,6 @@ export default function NewProduct() {
       </div>
     </section>
   );
-}
+};
+
+export default NewProduct;

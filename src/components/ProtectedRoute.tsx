@@ -21,16 +21,16 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
 
   // 로그인 상태 확인
   const isAuthenticated = user !== null;
-  console.log("isAuthenticated : ", isAuthenticated);
+  // console.log("isAuthenticated : ", isAuthenticated);
 
   // 사용자 역할 지정
   const userRole = isSeller ? "seller" : "consumer";
-  console.log("userRole : ", userRole);
+  // console.log("userRole : ", userRole);
 
   // if (isLoading) {
   //   return <div>Loading...</div>; // 로딩 중에는 로딩 표시
   // }
-  console.log(isLoading);
+  // console.log(isLoading);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
