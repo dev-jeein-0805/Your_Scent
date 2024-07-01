@@ -1,33 +1,31 @@
-import { Timestamp } from "firebase/firestore";
-import useFetchCollection from "../hooks/useFetchCollection";
-
-// 데이터 타입 정의
-interface Product {
-  id: string;
-  title: string;
-  amount: number;
-  price: number;
-  category: string;
-  description: string;
-  options: string[];
-  imageUrls?: string[];
-  createdAt: Timestamp;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getAllProducts } from "../api/products";
+import { Product } from "../types/Product";
+import { useNavigate } from "react-router-dom";
 
 const Products = () => {
-  const { data, isLoading } = useFetchCollection("products");
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: getAllProducts,
+  });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const navigate = useNavigate();
+
+  const handleProductClick = (product: Product) => {
+    navigate(`/mypage/products/edit/${product.id}`, { state: { product } });
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg-grid-cols-4 gap-4 p-4">
-      {data.length > 0 ? (
+      {data && data.length > 0 ? (
         data.map((product: Product) => (
           <li
             className="rounded-lg shadow-md overflow-hidden cursor-pointer"
             key={product.id}
+            onClick={() => handleProductClick(product)}
           >
             {product.imageUrls && product.imageUrls.length > 0 && (
               <img

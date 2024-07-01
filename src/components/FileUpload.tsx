@@ -27,10 +27,13 @@ const FileUpload = ({ onFileSelect }: FileUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const files = Array.from(event.target.files);
-      setSelectedFiles(files);
-      onFileSelect(files);
+    const fileList = event.target.files;
+    if (fileList && fileList.length > 0) {
+      const filesArray = Array.from(fileList); // FileList를 File[]로 변환
+      setSelectedFiles(filesArray);
+      onFileSelect(filesArray);
+    } else {
+      onFileSelect(null);
     }
   };
 
