@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { deleteProduct, updateProduct } from "../api/products";
+import {
+  deleteImagesFromStorage,
+  deleteProduct,
+  updateProduct,
+} from "../api/products";
 import { Product } from "../types/Product";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RiDeleteBin5Fill } from "react-icons/ri";
@@ -51,7 +55,12 @@ const EditProduct = () => {
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -75,8 +84,16 @@ const EditProduct = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (product && formData.imageUrls) {
+      const removedImages = product.imageUrls?.filter(
+        (url) => !formData.imageUrls?.includes(url)
+      );
+      if (removedImages && removedImages.length > 0) {
+        await deleteImagesFromStorage(removedImages);
+      }
+    }
     updateMutation.mutate(formData);
     alert("상품 정보가 수정되었어요!");
   };
@@ -145,7 +162,8 @@ const EditProduct = () => {
               name="title"
               placeholder="상품명"
               value={formData.title || ""}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6 mt-4"
               required
             />
             <input
@@ -153,7 +171,8 @@ const EditProduct = () => {
               name="amount"
               placeholder="상품 수량"
               value={formData.amount || ""}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
@@ -161,23 +180,32 @@ const EditProduct = () => {
               name="price"
               placeholder="상품 가격"
               value={formData.price || ""}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
-            <input
-              type="text"
+            <select
               name="category"
-              placeholder="카테고리"
               value={formData.category || ""}
-              onChange={handleChange}
+              onChange={handleSelectChange}
+              className="border p-3 mb-4 h-18 rounded-lg cursor-pointer"
               required
-            />
+            >
+              <option value="" disabled>
+                카테고리
+              </option>
+              <option value="Spray type">Spray type</option>
+              <option value="Oil type">Oil type</option>
+              <option value="Balm type">Balm type</option>
+              <option value="Textile perfume">Textile perfume</option>
+            </select>
             <input
               type="text"
               name="description"
               placeholder="제품 설명"
               value={formData.description || ""}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
@@ -185,7 +213,8 @@ const EditProduct = () => {
               name="options"
               placeholder="옵션들(콤마(,)로 구분)"
               value={formData.options || ""}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <div className="flex">
