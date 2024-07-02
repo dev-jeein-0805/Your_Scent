@@ -62,3 +62,12 @@ export const deleteProduct = async (
     throw error;
   }
 };
+
+// 수정하기 옵션에서 이미지 변경 시 사용
+export const deleteImagesFromStorage = async (imageUrls: string[]) => {
+  const deletePromises = imageUrls.map((url) => {
+    const imageRef = ref(storage, url);
+    return deleteObject(imageRef);
+  });
+  await Promise.all(deletePromises);
+};

@@ -31,12 +31,17 @@ const NewProduct = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProduct((prevProduct) => ({
       ...prevProduct,
       [name]: name === "options" ? value.split(",") : value,
     }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
   };
 
   // 이미지 여러 장을 함께 나열
@@ -165,7 +170,8 @@ const NewProduct = () => {
               name="title"
               value={product?.title ?? ""}
               placeholder="상품명"
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6 mt-4"
               required
             />
             <input
@@ -173,31 +179,41 @@ const NewProduct = () => {
               name="amount"
               value={product?.amount ?? ""}
               placeholder="상품 수량"
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
               type="number"
               name="price"
               value={product?.price ?? ""}
-              placeholder="가격"
-              onChange={handleChange}
+              placeholder="상품 가격"
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
-            <input
-              type="text"
+            <select
               name="category"
               value={product?.category ?? ""}
-              placeholder="카테고리"
-              onChange={handleChange}
+              onChange={handleSelectChange}
+              className="border p-3 mb-4 h-18 rounded-lg cursor-pointer"
               required
-            />
+            >
+              <option value="" disabled>
+                카테고리
+              </option>
+              <option value="Spray type">Spray type</option>
+              <option value="Oil type">Oil type</option>
+              <option value="Balm type">Balm type</option>
+              <option value="Textile perfume">Textile perfume</option>
+            </select>
             <input
               type="text"
               name="description"
               value={product?.description ?? ""}
               placeholder="제품 설명"
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
@@ -205,7 +221,8 @@ const NewProduct = () => {
               name="options"
               value={product?.options.join(", ") ?? ""}
               placeholder="옵션들(콤마(,)로 구분)"
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <button className="bg-brand mt-2" disabled={isUploading}>
