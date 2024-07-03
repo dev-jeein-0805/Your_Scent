@@ -1,8 +1,8 @@
-// api/getProductsByCategory.ts
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { Product } from "../types/Product";
 import { db } from "./firebase";
 
+// Home 페이지 사용
 export const getProductsByCategory = async () => {
   const productsRef = collection(db, "products");
   const q = query(productsRef, orderBy("createdAt", "desc"));
