@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { getByCategoryForScroll } from "../api/getByCategoryForScroll";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { FadeLoader } from "react-spinners";
 
@@ -16,6 +16,9 @@ const Category = () => {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [orderByField, setOrderByField] = useState<
+    "createdAtDesc" | "createdAtAsc" | "priceAsc" | "priceDesc"
+  >("createdAtDesc");
 
   const {
     data,
@@ -24,12 +27,14 @@ const Category = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteQuery<PageData, Error>({
-    queryKey: ["productsByCategoryForScroll", category],
+    queryKey: ["productsByCategoryForScroll", category, orderByField],
     queryFn: async ({ pageParam }) => {
       const result = await getByCategoryForScroll(
         category ?? "",
-        pageParam as QueryDocumentSnapshot<DocumentData> | null
+        pageParam as QueryDocumentSnapshot<DocumentData> | null,
+        orderByField
       );
       return result;
     },
@@ -67,12 +72,39 @@ const Category = () => {
     };
   }, [loadMoreRef, hasNextPage, fetchNextPage]);
 
+  const handleOrderChange = (
+    orderBy: "createdAtDesc" | "createdAtAsc" | "priceAsc" | "priceDesc"
+  ) => {
+    setOrderByField(orderBy);
+    refetch();
+  };
+
   if (isLoading) return <FadeLoader />;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div>
       <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold">{category}</h2>
+      <div className="flex justify-end mr-4 mb-4">
+        <button
+          onClick={() => handleOrderChange("createdAtDesc")}
+          className="mx-2"
+        >
+          최신 등록 순
+        </button>
+        <button
+          onClick={() => handleOrderChange("createdAtAsc")}
+          className="mx-2"
+        >
+          오래된 등록 순
+        </button>
+        <button onClick={() => handleOrderChange("priceAsc")} className="mx-2">
+          낮은 가격 순
+        </button>
+        <button onClick={() => handleOrderChange("priceDesc")} className="mx-2">
+          높은 가격 순
+        </button>
+      </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product: Product) => (
