@@ -17,16 +17,43 @@ interface GetByCategoryForScrollResult {
   lastVisible: QueryDocumentSnapshot<DocumentData> | null;
 }
 
+type OrderBy = "createdAtDesc" | "createdAtAsc" | "priceAsc" | "priceDesc";
+
 // Category 페이지 사용
 export const getByCategoryForScroll = async (
   category: string,
-  pageParam: QueryDocumentSnapshot<DocumentData> | null = null
+  pageParam: QueryDocumentSnapshot<DocumentData> | null = null,
+  orderByField: OrderBy = "createdAtDesc"
 ): Promise<GetByCategoryForScrollResult> => {
   const productsRef = collection(db, "products");
+
+  let orderField: string;
+  let orderDirection: "asc" | "desc";
+
+  switch (orderByField) {
+    case "createdAtAsc":
+      orderField = "createdAt";
+      orderDirection = "asc";
+      break;
+    case "priceAsc":
+      orderField = "price";
+      orderDirection = "asc";
+      break;
+    case "priceDesc":
+      orderField = "price";
+      orderDirection = "desc";
+      break;
+    case "createdAtDesc":
+    default:
+      orderField = "createdAt";
+      orderDirection = "desc";
+      break;
+  }
+
   let q = query(
     productsRef,
     where("category", "==", category),
-    orderBy("createdAt", "desc"),
+    orderBy(orderField, orderDirection),
     limit(10)
   );
 
@@ -34,13 +61,12 @@ export const getByCategoryForScroll = async (
     q = query(
       productsRef,
       where("category", "==", category),
-      orderBy("createdAt", "desc"),
+      orderBy(orderField, orderDirection),
       startAfter(pageParam),
       limit(10)
     );
   }
 
-  console.log("Query: ", q);
   try {
     const querySnapshot = await getDocs(q);
     console.log("QuerySnapshot: ", querySnapshot);
@@ -58,6 +84,6 @@ export const getByCategoryForScroll = async (
     return { products, lastVisible };
   } catch (error) {
     console.error("Error getting documents: ", error);
-    throw error; // 필요시 에러를 다시 던질 수 있습니다.
+    throw error;
   }
 };
