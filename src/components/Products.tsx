@@ -36,7 +36,7 @@ const Products = () => {
             )}
             <div className="mt-2 px-2 text-lg flex justify-between items-center">
               <h3 className="truncate">{product.title}</h3>
-              <p>{`₩${product.price}`}</p>
+              <p>{`₩${product.price.toLocaleString()}`}</p>
             </div>
             <p className="mb-2 px-2 text-gray-600">{product.category}</p>
           </li>

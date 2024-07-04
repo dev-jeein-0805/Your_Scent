@@ -35,7 +35,12 @@ const NewProduct = () => {
     const { name, value } = e.target;
     setProduct((prevProduct) => ({
       ...prevProduct,
-      [name]: name === "options" ? value.split(",") : value,
+      [name]:
+        name === "options"
+          ? value.split(",")
+          : name === "price"
+            ? Number(value)
+            : value,
     }));
   };
 
