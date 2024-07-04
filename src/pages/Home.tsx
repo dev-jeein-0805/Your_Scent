@@ -15,7 +15,7 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/mypage/products/edit/${product.id}`, { state: { product } });
+    navigate(`/products/${product.id}`, { state: { product } });
   };
 
   const handleViewMoreClick = (category: string) => {
