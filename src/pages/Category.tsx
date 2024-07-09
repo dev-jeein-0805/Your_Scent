@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { getByCategoryForScroll } from "../api/getByCategoryForScroll";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { FadeLoader } from "react-spinners";
 
@@ -46,10 +46,28 @@ const Category = () => {
     navigate(`/products/${product.id}`, { state: { product } });
   };
 
-  const filteredProducts =
-    data?.pages.flatMap((page) =>
-      page.products.filter((product: Product) => product.category === category)
-    ) || [];
+  // const filteredProducts =
+  //   data?.pages.flatMap((page) =>
+  //     page.products.filter((product: Product) => product.category === category)
+  //   ) || [];
+
+  const filteredProducts = useMemo(() => {
+    const products =
+      data?.pages.flatMap((page) =>
+        page.products.filter(
+          (product: Product) => product.category === category
+        )
+      ) || [];
+
+    switch (orderByField) {
+      case "priceAsc":
+        return products.sort((a, b) => a.price - b.price);
+      case "priceDesc":
+        return products.sort((a, b) => b.price - a.price);
+      default:
+        return products;
+    }
+  }, [data, orderByField, category]);
 
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
