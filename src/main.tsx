@@ -8,7 +8,7 @@ import Home from "./pages/Home.tsx";
 import AllProducts from "./pages/AllProducts.tsx";
 import NewProduct from "./pages/NewProduct.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
-import Cart from "./pages/Cart.tsx";
+import Cart from "./components/Cart.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import { AuthContextProvider } from "./contexts/AuthContext.tsx";
@@ -20,6 +20,7 @@ import OrderHistory from "./pages/OrderHistory.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import EditProduct from "./pages/EditProduct.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CartProvider } from "./contexts/CartContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
         path: "products/:id",
         element: <ProductDetail />,
       },
+
       { path: "/order", element: <Order /> },
       {
         path: "/mypage",
@@ -46,7 +48,14 @@ const router = createBrowserRouter([
         children: [
           { path: "editProfile", element: <EditProfile /> },
           { path: "orderHistory", element: <OrderHistory /> },
-          { path: "cart", element: <Cart /> },
+          {
+            path: "cart",
+            element: (
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            ),
+          },
           {
             path: "products/new",
             element: (
@@ -84,7 +93,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
-        <RouterProvider router={router} />
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
       </AuthContextProvider>
     </QueryClientProvider>
   </React.StrictMode>

@@ -5,6 +5,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
+import { CartContext, CartProvider } from "./CartContext";
 
 export interface UserInfo {
   email: string;
@@ -75,13 +76,21 @@ const AuthDispatchContext = createContext<
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const cartContext = useContext(CartContext);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const storedCart = localStorage.getItem("cart");
     if (storedUser) {
       dispatch({ type: "SET_USER", payload: JSON.parse(storedUser) });
     }
-  }, []);
+    if (cartContext && storedCart) {
+      cartContext.dispatch({
+        type: "LOAD_CART",
+        payload: JSON.parse(storedCart),
+      });
+    }
+  }, [dispatch, cartContext]);
 
   useEffect(() => {
     if (state.user) {
@@ -91,10 +100,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [state.user]);
 
+  useEffect(() => {
+    if (cartContext) {
+      localStorage.setItem("cart", JSON.stringify(cartContext.cart));
+    }
+  }, [cartContext?.cart]);
+
   return (
     <AuthStateContext.Provider value={state}>
       <AuthDispatchContext.Provider value={dispatch}>
-        {children}
+        <CartProvider>{children}</CartProvider>
       </AuthDispatchContext.Provider>
     </AuthStateContext.Provider>
   );

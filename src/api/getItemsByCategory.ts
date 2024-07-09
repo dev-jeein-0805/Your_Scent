@@ -1,11 +1,17 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { Product } from "../types/Product";
 import { db } from "./firebase";
 
-// Home 페이지 사용 (함수명 변경할 것 - 내용이 카테고리별 정렬x)
-export const getProductsByCategory = async () => {
+// 특정 카테고리의 상품을 가져오는 함수
+export const getItemsByCategory = async (
+  category: string
+): Promise<Product[]> => {
   const productsRef = collection(db, "products");
-  const q = query(productsRef, orderBy("createdAt", "desc"));
+  const q = query(
+    productsRef,
+    where("category", "==", category),
+    orderBy("createdAt", "desc")
+  );
   const querySnapshot = await getDocs(q);
   const products: Product[] = [];
 

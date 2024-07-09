@@ -66,6 +66,7 @@ export const join = async (
       email: user.email,
       isSeller,
       username,
+      cart: [], // 초기 장바구니는 빈 배열로 생성
       createdAt: Timestamp.now().toDate(),
     });
     console.log("Firestore에 사용자 정보 저장 성공"); // 디버깅 로그 추가
