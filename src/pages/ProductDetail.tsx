@@ -1,13 +1,66 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Product } from "../types/Product";
+import { useState, useEffect, useContext } from "react";
+import { getItemsByCategory } from "../api/getItemsByCategory";
+import { CartContext } from "../contexts/CartContext";
 
 const ProductDetail = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const product = location.state?.product as Product;
+  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const cartContext = useContext(CartContext);
+
+  // 장바구니에 현재 상품이 담겨 있는지 확인
+  const isInCart = cartContext?.cart?.some((item) => item.id === product.id);
+
+  useEffect(() => {
+    if (product) {
+      getItemsByCategory(product.category).then((products) => {
+        setRecommendedProducts(products.filter((p) => p.id !== product.id));
+      });
+    }
+  }, [product]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(
+        (prevIndex) => (prevIndex + 1) % recommendedProducts.length
+      );
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [recommendedProducts]);
 
   if (!product) {
     return <div>Product not found</div>;
   }
+
+  const displayedProducts = recommendedProducts.slice(
+    currentIndex,
+    currentIndex + 4
+  );
+
+  const handleAddToCart = async () => {
+    if (cartContext?.dispatch) {
+      cartContext.dispatch({
+        type: "ADD_TO_CART",
+        payload: {
+          ...product,
+          quantity,
+          imageUrl: product.imageUrls ? product.imageUrls[0] : "",
+        },
+      });
+    }
+
+    // navigate("/cart");
+  };
+
+  const handleGoToCart = () => {
+    navigate("/mypage/cart");
+  };
 
   return (
     <>
@@ -39,7 +92,50 @@ const ProductDetail = () => {
           </p>
           <p className="mt-4 text-gray-700">{product.category}</p>
           <p className="mt-2 text-gray-600">재고: {product.amount}</p>
-          <p className="mt-2 text-gray-600">수량: </p>
+          <p className="mt-2 text-gray-600">
+            수량:
+            <button
+              onClick={() => setQuantity(quantity - 1)}
+              disabled={quantity === 1}
+            >
+              -
+            </button>
+            {quantity}
+            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+          </p>
+          {isInCart ? (
+            <button className="mt-4" onClick={handleGoToCart}>
+              장바구니 보기
+            </button>
+          ) : (
+            <button className="mt-4" onClick={handleAddToCart}>
+              장바구니 담기
+            </button>
+          )}
+        </div>
+      </section>
+      <section className="p-4">
+        <h2 className="text-2xl font-bold py-2">추천상품</h2>
+        <div className="flex flex-wrap">
+          {displayedProducts.map((recommendedProduct, index) => (
+            <div key={index} className="border w-full sm:w-1/2 lg:w-1/4 p-4">
+              <img
+                className="w-full"
+                src={
+                  recommendedProduct.imageUrls &&
+                  recommendedProduct.imageUrls[0]
+                }
+                alt={recommendedProduct.title}
+              />
+              <h3 className="text-xl font-bold mt-2">
+                {recommendedProduct.title}
+              </h3>
+              <p className="text-gray-600">{recommendedProduct.category}</p>
+              <p className="text-2xl font-bold">
+                ₩{recommendedProduct.price.toLocaleString()}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
     </>

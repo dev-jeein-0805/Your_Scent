@@ -7,21 +7,23 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
 } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useAuthDispatch, useAuthState } from "../contexts/AuthContext";
 import { UserInfo } from "../contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../api/firebase";
+import ShopperBag from "../utils/ShopperBag";
+import Drawer from "./Drawer";
+import { CartContext } from "../contexts/CartContext";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isSeller, setIsSeller] = useState<boolean>(false);
+  const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
   const authState = useAuthState();
-
-  // console.log("user:", user);
-  // console.log("isSeller:", isSeller);
+  const cartContext = useContext(CartContext);
 
   // Firebase 인증 상태 변화를 감지하여 user 상태를 업데이트
   useEffect(() => {
@@ -62,6 +64,14 @@ export default function Navbar() {
     }
   };
 
+  if (!cartContext) {
+    throw new Error("CartContext를 찾을 수 없습니다.");
+  }
+
+  const { cart } = cartContext;
+
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <header className="flex justify-between border-b border-gray-300 p-2">
       <Link to="/" className="flex items-center text-1xl text-brand">
@@ -75,7 +85,12 @@ export default function Navbar() {
             <Link to="products/new" className="text-2xl">
               <BsFillPencilFill />
             </Link>
-            <Link to="cart">Cart</Link>
+            <button onClick={() => setDrawerOpen(true)} className="text-2xl">
+              <ShopperBag />
+              {totalQuantity > 0 && (
+                <div className="rounded-full bg-red-500">{totalQuantity}</div>
+              )}
+            </button>
             <Link to="/mypage">My Page</Link>
             <button onClick={handleLogout}>Logout</button>
           </>
@@ -86,6 +101,7 @@ export default function Navbar() {
           </>
         )}
       </nav>
+      <Drawer isOpen={isDrawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 }
