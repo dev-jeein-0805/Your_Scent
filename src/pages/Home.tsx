@@ -15,7 +15,7 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/products/${product.id}`, { state: { product } });
+    navigate(`/products/${product.productId}`, { state: { product } });
   };
 
   const handleViewMoreClick = (category: string) => {
@@ -37,8 +37,8 @@ const Home = () => {
     });
 
     products.forEach((product) => {
-      if (grouped[product.category]) {
-        grouped[product.category].push(product);
+      if (grouped[product.productCategory]) {
+        grouped[product.productCategory].push(product);
       }
     });
 
@@ -53,8 +53,8 @@ const Home = () => {
           const maxIndex = Math.max(
             ...fixedCategories.map(
               (category) =>
-                data.filter((product) => product.category === category).length -
-                4
+                data.filter((product) => product.productCategory === category)
+                  .length - 4
             )
           );
           return prevIndex + 1 > maxIndex ? 0 : prevIndex + 1;
@@ -95,22 +95,23 @@ const Home = () => {
                   .map((product: Product) => (
                     <li
                       className="rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-500 ease-in-out transform hover:scale-105"
-                      key={product.id}
+                      key={product.productId}
                       onClick={() => handleProductClick(product)}
                     >
-                      {product.imageUrls && product.imageUrls.length > 0 && (
-                        <img
-                          className="w-full"
-                          src={product.imageUrls[0]}
-                          alt={product.title}
-                        />
-                      )}
+                      {product.productImageUrls &&
+                        product.productImageUrls.length > 0 && (
+                          <img
+                            className="w-full"
+                            src={product.productImageUrls[0]}
+                            alt={product.productName}
+                          />
+                        )}
                       <div className="mt-2 px-2 text-lg flex justify-between items-center">
-                        <h3 className="truncate">{product.title}</h3>
-                        <p>{`₩${product.price.toLocaleString()}`}</p>
+                        <h3 className="truncate">{product.productName}</h3>
+                        <p>{`₩${product.productPrice.toLocaleString()}`}</p>
                       </div>
                       <p className="mb-2 px-2 text-gray-600">
-                        {product.category}
+                        {product.productCategory}
                       </p>
                     </li>
                   ))}

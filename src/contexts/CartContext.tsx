@@ -8,10 +8,10 @@ import {
 
 interface CartItem {
   id: string;
-  imageUrl: string;
   title: string;
   price: number;
   quantity: number;
+  imageUrl: string;
 }
 
 type CartState = CartItem[];

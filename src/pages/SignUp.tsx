@@ -6,7 +6,7 @@ import { useAuthDispatch } from "../contexts/AuthContext";
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
   const [isSeller, setIsSeller] = useState<boolean>(false);
   const dispatch = useAuthDispatch();
   const navigate = useNavigate();
@@ -15,8 +15,8 @@ const SignUp = () => {
     const {
       target: { name, value },
     } = event;
-    if (name === "username") {
-      setUsername(value);
+    if (name === "nickname") {
+      setNickname(value);
     }
     if (name === "email") {
       setEmail(value);
@@ -38,7 +38,7 @@ const SignUp = () => {
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    await join(username, email, password, isSeller, navigate);
+    await join(nickname, email, password, isSeller, navigate);
   };
 
   return (
@@ -50,8 +50,8 @@ const SignUp = () => {
             <input
               className="w-80 h-8 pl-2 pb-2 border-b-2 border-white-500 bg-loginColor focus:outline-none focus:border-red-500"
               type="text"
-              value={username}
-              name="username"
+              value={nickname}
+              name="nickname"
               onChange={onChange}
               placeholder="Name"
               required

@@ -43,7 +43,7 @@ const Category = () => {
   });
 
   const handleProductClick = (product: Product) => {
-    navigate(`/products/${product.id}`, { state: { product } });
+    navigate(`/products/${product.productId}`, { state: { product } });
   };
 
   // const filteredProducts =
@@ -55,15 +55,15 @@ const Category = () => {
     const products =
       data?.pages.flatMap((page) =>
         page.products.filter(
-          (product: Product) => product.category === category
+          (product: Product) => product.productCategory === category
         )
       ) || [];
 
     switch (orderByField) {
       case "priceAsc":
-        return products.sort((a, b) => a.price - b.price);
+        return products.sort((a, b) => a.productPrice - b.productPrice);
       case "priceDesc":
-        return products.sort((a, b) => b.price - a.price);
+        return products.sort((a, b) => b.productPrice - a.productPrice);
       default:
         return products;
     }
@@ -128,21 +128,24 @@ const Category = () => {
           filteredProducts.map((product: Product) => (
             <li
               className="rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-500 ease-in-out transform hover:scale-105"
-              key={product.id}
+              key={product.productId}
               onClick={() => handleProductClick(product)}
             >
-              {product.imageUrls && product.imageUrls.length > 0 && (
-                <img
-                  className="w-full"
-                  src={product.imageUrls[0]}
-                  alt={product.title}
-                />
-              )}
+              {product.productImageUrls &&
+                product.productImageUrls.length > 0 && (
+                  <img
+                    className="w-full"
+                    src={product.productImageUrls[0]}
+                    alt={product.productName}
+                  />
+                )}
               <div className="mt-2 px-2 text-lg flex justify-between items-center">
-                <h3 className="truncate">{product.title}</h3>
-                <p>{`₩${product.price.toLocaleString()}`}</p>
+                <h3 className="truncate">{product.productName}</h3>
+                <p>{`₩${product.productPrice.toLocaleString()}`}</p>
               </div>
-              <p className="mb-2 px-2 text-gray-600">{product.category}</p>
+              <p className="mb-2 px-2 text-gray-600">
+                {product.productCategory}
+              </p>
             </li>
           ))
         ) : (

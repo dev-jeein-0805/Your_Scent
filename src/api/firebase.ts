@@ -40,13 +40,13 @@ export const storage = getStorage(app);
 
 // 회원가입
 export const join = async (
-  username: string,
+  nickname: string,
   email: string,
   password: string,
   isSeller: boolean,
   navigate: Function
 ) => {
-  if (!email || !password || !username) {
+  if (!email || !password || !nickname) {
     alert("이름과 이메일, 비밀번호를 필수로 입력해 주세요.");
     return;
   }
@@ -63,11 +63,13 @@ export const join = async (
 
     // Firestore에 사용자 데이터 저장
     await setDoc(doc(db, "users", user.uid), {
+      userId: user.uid,
       email: user.email,
+      password,
       isSeller,
-      username,
-      cart: [], // 초기 장바구니는 빈 배열로 생성
+      nickname,
       createdAt: Timestamp.now().toDate(),
+      updatedAt: Timestamp.now().toDate(),
     });
     console.log("Firestore에 사용자 정보 저장 성공"); // 디버깅 로그 추가
 

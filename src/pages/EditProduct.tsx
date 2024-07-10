@@ -6,7 +6,7 @@ import {
   updateProduct,
 } from "../api/products";
 import { Product } from "../types/Product";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import FileUpload, { uploadFiles } from "../components/FileUpload";
 
@@ -16,7 +16,6 @@ interface DeleteProductArgs {
 }
 
 const EditProduct = () => {
-  const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
@@ -34,7 +33,7 @@ const EditProduct = () => {
   const updateMutation = useMutation<void, Error, Partial<Product>, unknown>({
     mutationFn: async (newData: Partial<Product>) => {
       if (product) {
-        await updateProduct(product.id, newData);
+        await updateProduct(product.productId, newData);
       } else {
         throw new Error("Product is undefined");
       }
@@ -67,7 +66,9 @@ const EditProduct = () => {
 
   const handleRemoveImage = (index: number) => {
     setFormData((prev) => {
-      const updatedImages = prev.imageUrls ? [...prev.imageUrls] : [];
+      const updatedImages = prev.productImageUrls
+        ? [...prev.productImageUrls]
+        : [];
       updatedImages.splice(index, 1);
       return { ...prev, imageUrls: updatedImages };
     });
@@ -79,16 +80,18 @@ const EditProduct = () => {
       const fileUrls = await uploadFiles(files);
       setFormData((prev) => ({
         ...prev,
-        imageUrls: prev.imageUrls ? [...prev.imageUrls, ...fileUrls] : fileUrls,
+        imageUrls: prev.productImageUrls
+          ? [...prev.productImageUrls, ...fileUrls]
+          : fileUrls,
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (product && formData.imageUrls) {
-      const removedImages = product.imageUrls?.filter(
-        (url) => !formData.imageUrls?.includes(url)
+    if (product && formData.productImageUrls) {
+      const removedImages = product.productImageUrls?.filter(
+        (url) => !formData.productImageUrls?.includes(url)
       );
       if (removedImages && removedImages.length > 0) {
         await deleteImagesFromStorage(removedImages);
@@ -105,9 +108,9 @@ const EditProduct = () => {
   // };
 
   const handleDelete = () => {
-    if (product && formData.id && formData.imageUrls) {
+    if (product && formData.productId && formData.productImageUrls) {
       deleteMutation.mutate(
-        { id: formData.id, imageUrls: formData.imageUrls },
+        { id: formData.productId, imageUrls: formData.productImageUrls },
         {
           onSuccess: () => {
             setProduct(null); // 상태에서 삭제
@@ -131,8 +134,9 @@ const EditProduct = () => {
       <div className="flex justify-center">
         <div className="w-1/2 border-2 ml-10 relative">
           <div className="flex flex-wrap">
-            {formData.imageUrls && formData.imageUrls.length > 0 ? (
-              formData.imageUrls.map((url, index) => (
+            {formData.productImageUrls &&
+            formData.productImageUrls.length > 0 ? (
+              formData.productImageUrls.map((url, index) => (
                 <div className="relative w-48 mx-2 my-2" key={index}>
                   <img
                     className="w-full"
@@ -159,34 +163,34 @@ const EditProduct = () => {
           <form className="flex flex-col px-12" onSubmit={handleSubmit}>
             <input
               type="text"
-              name="title"
+              name="productName"
               placeholder="상품명"
-              value={formData.title || ""}
+              value={formData.productName || ""}
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6 mt-4"
               required
             />
             <input
               type="number"
-              name="amount"
-              placeholder="상품 수량"
-              value={formData.amount || ""}
+              name="productStock"
+              placeholder="상품 재고"
+              value={formData.productStock || ""}
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
               type="number"
-              name="price"
+              name="productPrice"
               placeholder="상품 가격"
-              value={formData.price || ""}
+              value={formData.productPrice || ""}
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <select
-              name="category"
-              value={formData.category || ""}
+              name="productCategory"
+              value={formData.productCategory || ""}
               onChange={handleSelectChange}
               className="border p-3 mb-4 h-18 rounded-lg cursor-pointer"
               required
@@ -201,18 +205,18 @@ const EditProduct = () => {
             </select>
             <input
               type="text"
-              name="description"
+              name="productDescription"
               placeholder="제품 설명"
-              value={formData.description || ""}
+              value={formData.productDescription || ""}
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
               type="text"
-              name="options"
+              name="productOptions"
               placeholder="옵션들(콤마(,)로 구분)"
-              value={formData.options || ""}
+              value={formData.productOptions || ""}
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
