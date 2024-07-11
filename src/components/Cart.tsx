@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { CartContext } from "../contexts/CartContext";
+import OrderConfirmModal from "./OrderConfirmModal";
 
 const Cart = () => {
   const cartContext = useContext(CartContext);
@@ -8,7 +9,8 @@ const Cart = () => {
     return <div>장바구니가 비어 있습니다.</div>;
   }
 
-  const { cart, dispatch } = cartContext;
+  const { cart, dispatch, totalAmount, shippingCost, finalAmount } =
+    cartContext;
 
   const increaseQuantity = (id: string) => {
     dispatch({ type: "INCREASE_QUANTITY", payload: { id } });
@@ -22,13 +24,18 @@ const Cart = () => {
     dispatch({ type: "REMOVE_FROM_CART", payload: { id } });
   };
 
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
+  // const calculateTotal = () => {
+  //   return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  // };
 
-  const totalAmount = calculateTotal();
-  const shippingCost = totalAmount >= 50000 ? 0 : 3000;
-  const finalAmount = totalAmount + shippingCost;
+  // const totalAmount = calculateTotal();
+  // const shippingCost = totalAmount >= 50000 ? 0 : 3000;
+  // const finalAmount = totalAmount + shippingCost;
+
+  // // 결제 모듈에 전달할 데이터
+  // const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+  // const firstItemTitle = cart.length > 0 ? cart[0].title : "";
+  // const orderName = `${firstItemTitle} 외 총 ${totalQuantity} 개`;
 
   return (
     <div>
@@ -66,11 +73,15 @@ const Cart = () => {
         ))}
       </ul>
       <div>
-        <p>상품 총액: {totalAmount.toLocaleString()}원</p>
+        <p>
+          상품 총액:
+          {totalAmount.toLocaleString()}원
+        </p>
         <p>배송비: {shippingCost.toLocaleString()}원</p>
         <p>총 합계: {finalAmount.toLocaleString()}원</p>
       </div>
-      <button>결제하기</button>
+      {/* <button>결제하기</button> */}
+      <OrderConfirmModal />
     </div>
   );
 };

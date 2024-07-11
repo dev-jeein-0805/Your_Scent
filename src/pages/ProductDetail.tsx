@@ -14,12 +14,16 @@ const ProductDetail = () => {
   const cartContext = useContext(CartContext);
 
   // 장바구니에 현재 상품이 담겨 있는지 확인
-  const isInCart = cartContext?.cart?.some((item) => item.id === product.id);
+  const isInCart = cartContext?.cart?.some(
+    (item) => item.id === product.productId
+  );
 
   useEffect(() => {
     if (product) {
-      getItemsByCategory(product.category).then((products) => {
-        setRecommendedProducts(products.filter((p) => p.id !== product.id));
+      getItemsByCategory(product.productCategory).then((products) => {
+        setRecommendedProducts(
+          products.filter((p) => p.productId !== product.productId)
+        );
       });
     }
   }, [product]);
@@ -48,50 +52,58 @@ const ProductDetail = () => {
       cartContext.dispatch({
         type: "ADD_TO_CART",
         payload: {
-          ...product,
+          // ...product,
+          id: product.productId,
+          title: product.productName,
+          price: product.productPrice,
           quantity,
-          imageUrl: product.imageUrls ? product.imageUrls[0] : "",
+          imageUrl: product.productImageUrls ? product.productImageUrls[0] : "",
         },
       });
     }
-
-    // navigate("/cart");
   };
 
   const handleGoToCart = () => {
     navigate("/mypage/cart");
   };
 
+  const handleProductClick = (recommendedProduct: Product) => {
+    navigate(`/products/${product.productId}`, {
+      state: { product: recommendedProduct },
+    });
+    window.scrollTo(0, 0); // 페이지 이동 후 스크롤을 상단으로 이동
+  };
+
   return (
     <>
-      <section className="flex flex-col md:flex-row p-4 justify-center min-h-screen">
-        {product.imageUrls && product.imageUrls.length > 0 && (
+      <section className="flex flex-col md:flex-row p-4 justify-center mb-4">
+        {product.productImageUrls && product.productImageUrls.length > 0 && (
           <div className="w-full px-4 basis-4/12">
             <img
               className="w-full"
-              src={product.imageUrls[0]}
-              alt={product.title}
+              src={product.productImageUrls[0]}
+              alt={product.productName}
             />
             <div className="grid grid-cols-3 gap-2 mt-4">
-              {product.imageUrls.slice(1).map((url, index) => (
+              {product.productImageUrls.slice(1).map((url, index) => (
                 <img
                   className="w-full"
                   key={index}
                   src={url}
-                  alt={`${product.title} ${index + 1}`}
+                  alt={`${product.productName} ${index + 1}`}
                 />
               ))}
             </div>
           </div>
         )}
         <div className="w-full basis-5/12 flex flex-col p-4">
-          <h1 className="text-3xl font-bold py-2">{product.title}</h1>
-          <p className="mt-2 text-gray-600">{product.description}</p>
+          <h1 className="text-3xl font-bold py-2">{product.productName}</h1>
+          <p className="mt-2 text-gray-600">{product.productDescription}</p>
           <p className="text-2xl font-bold py-2 border-gray-400">
-            ₩{product.price.toLocaleString()}
+            ₩{product.productPrice.toLocaleString()}
           </p>
-          <p className="mt-4 text-gray-700">{product.category}</p>
-          <p className="mt-2 text-gray-600">재고: {product.amount}</p>
+          <p className="mt-4 text-gray-700">{product.productCategory}</p>
+          <p className="mt-2 text-gray-600">재고: {product.productStock}</p>
           <p className="mt-2 text-gray-600">
             수량:
             <button
@@ -114,25 +126,31 @@ const ProductDetail = () => {
           )}
         </div>
       </section>
-      <section className="p-4">
+      <section className="p-4 mt-0">
         <h2 className="text-2xl font-bold py-2">추천상품</h2>
         <div className="flex flex-wrap">
           {displayedProducts.map((recommendedProduct, index) => (
-            <div key={index} className="border w-full sm:w-1/2 lg:w-1/4 p-4">
+            <div
+              key={index}
+              className="border w-full sm:w-1/2 lg:w-1/4 p-4 cursor-pointer"
+              onClick={() => handleProductClick(recommendedProduct)}
+            >
               <img
                 className="w-full"
                 src={
-                  recommendedProduct.imageUrls &&
-                  recommendedProduct.imageUrls[0]
+                  recommendedProduct.productImageUrls &&
+                  recommendedProduct.productImageUrls[0]
                 }
-                alt={recommendedProduct.title}
+                alt={recommendedProduct.productName}
               />
               <h3 className="text-xl font-bold mt-2">
-                {recommendedProduct.title}
+                {recommendedProduct.productName}
               </h3>
-              <p className="text-gray-600">{recommendedProduct.category}</p>
+              <p className="text-gray-600">
+                {recommendedProduct.productCategory}
+              </p>
               <p className="text-2xl font-bold">
-                ₩{recommendedProduct.price.toLocaleString()}
+                ₩{recommendedProduct.productPrice.toLocaleString()}
               </p>
             </div>
           ))}

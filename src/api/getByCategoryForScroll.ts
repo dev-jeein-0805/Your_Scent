@@ -36,11 +36,11 @@ export const getByCategoryForScroll = async (
       orderDirection = "asc";
       break;
     case "priceAsc":
-      orderField = "price";
+      orderField = "productPrice";
       orderDirection = "asc";
       break;
     case "priceDesc":
-      orderField = "price";
+      orderField = "productPrice";
       orderDirection = "desc";
       break;
     case "createdAtDesc":
@@ -52,7 +52,7 @@ export const getByCategoryForScroll = async (
 
   let q = query(
     productsRef,
-    where("category", "==", category),
+    where("productCategory", "==", category),
     orderBy(orderField, orderDirection),
     limit(10)
   );
@@ -60,7 +60,7 @@ export const getByCategoryForScroll = async (
   if (pageParam) {
     q = query(
       productsRef,
-      where("category", "==", category),
+      where("productCategory", "==", category),
       orderBy(orderField, orderDirection),
       startAfter(pageParam),
       limit(10)
@@ -72,10 +72,19 @@ export const getByCategoryForScroll = async (
     console.log("QuerySnapshot: ", querySnapshot);
     const products: Product[] = [];
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
       products.push({
-        id: doc.id,
-        ...doc.data(),
-        price: Number(doc.data().price),
+        productId: doc.id, // Firestore 문서 ID를 productId로 사용
+        sellerId: data.sellerId,
+        productName: data.productName,
+        productStock: data.productStock,
+        productPrice: Number(data.productPrice),
+        productCategory: data.productCategory,
+        productDescription: data.productDescription,
+        productOptions: data.productOptions,
+        productImageUrls: data.productImageUrls,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
       } as Product);
     });
 
