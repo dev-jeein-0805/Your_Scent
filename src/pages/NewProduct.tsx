@@ -1,44 +1,49 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import FileUpload, { uploadFiles } from "../components/FileUpload";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { db, storage } from "../api/firebase";
+import { addDoc, collection, Timestamp, updateDoc } from "firebase/firestore";
+import { auth, db, storage } from "../api/firebase";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { deleteObject, ref } from "firebase/storage";
-
-interface Product {
-  title: string;
-  amount: number;
-  price: number;
-  category: string;
-  description: string;
-  options: string[];
-  imageUrls?: string[];
-  createdAt: Timestamp;
-}
+import { Product } from "../types/Product";
+import { onAuthStateChanged } from "firebase/auth";
 
 const NewProduct = () => {
   const [product, setProduct] = useState<Product>({
-    title: "",
-    amount: 0,
-    price: 0,
-    category: "",
-    description: "",
-    options: [],
+    productId: "",
+    sellerId: "",
+    productName: "",
+    productStock: 0,
+    productPrice: 0,
+    productCategory: "",
+    productDescription: "",
+    productImageUrls: [],
+    productOptions: [],
     createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // 현재 로그인한 사용자의 정보를 가져옴
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+      }
+    });
+  }, []);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProduct((prevProduct) => ({
       ...prevProduct,
       [name]:
-        name === "options"
+        name === "productOptions"
           ? value.split(",")
-          : name === "price"
+          : name === "productPrice"
             ? Number(value)
             : value,
     }));
@@ -113,22 +118,30 @@ const NewProduct = () => {
     try {
       const productData = {
         ...product,
-        imageUrls: uploadedUrls,
+        sellerId: userId,
+        productImageUrls: uploadedUrls,
         createdAt: Timestamp.now().toDate(),
       };
 
       // Firestore에 제품 데이터 저장
-      await addDoc(collection(db, "products"), productData);
+      const docRef = await addDoc(collection(db, "products"), productData);
+
+      // Firestore에서 생성된 문서 ID를 productId로 설정
+      await updateDoc(docRef, { productId: docRef.id });
 
       setSuccess("제품이 성공적으로 등록되었습니다!");
       setProduct({
-        title: "",
-        amount: 0,
-        price: 0,
-        category: "",
-        description: "",
-        options: [],
+        productId: "",
+        sellerId: "",
+        productName: "",
+        productStock: 0,
+        productPrice: 0,
+        productCategory: "",
+        productDescription: "",
+        productImageUrls: [],
+        productOptions: [],
         createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       });
       setSelectedFiles([]);
       setUploadedUrls([]);
@@ -172,8 +185,8 @@ const NewProduct = () => {
           <form className="flex flex-col px-12" onSubmit={handleSubmit}>
             <input
               type="text"
-              name="title"
-              value={product?.title ?? ""}
+              name="productName"
+              value={product?.productName ?? ""}
               placeholder="상품명"
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6 mt-4"
@@ -181,25 +194,25 @@ const NewProduct = () => {
             />
             <input
               type="number"
-              name="amount"
-              value={product?.amount ?? ""}
-              placeholder="상품 수량"
+              name="productStock"
+              value={product?.productStock ?? ""}
+              placeholder="상품 재고"
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <input
               type="number"
-              name="price"
-              value={product?.price ?? ""}
+              name="productPrice"
+              value={product?.productPrice ?? ""}
               placeholder="상품 가격"
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
             <select
-              name="category"
-              value={product?.category ?? ""}
+              name="productCategory"
+              value={product?.productCategory ?? ""}
               onChange={handleSelectChange}
               className="border p-3 mb-4 h-18 rounded-lg cursor-pointer"
               required
@@ -214,8 +227,8 @@ const NewProduct = () => {
             </select>
             <input
               type="text"
-              name="description"
-              value={product?.description ?? ""}
+              name="productDescription"
+              value={product?.productDescription ?? ""}
               placeholder="제품 설명"
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
@@ -223,8 +236,8 @@ const NewProduct = () => {
             />
             <input
               type="text"
-              name="options"
-              value={product?.options.join(", ") ?? ""}
+              name="productOptions"
+              value={product?.productOptions.join(", ") ?? ""}
               placeholder="옵션들(콤마(,)로 구분)"
               onChange={handleInputChange}
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"

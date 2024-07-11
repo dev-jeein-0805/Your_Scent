@@ -9,17 +9,26 @@ export const getItemsByCategory = async (
   const productsRef = collection(db, "products");
   const q = query(
     productsRef,
-    where("category", "==", category),
+    where("productCategory", "==", category),
     orderBy("createdAt", "desc")
   );
   const querySnapshot = await getDocs(q);
   const products: Product[] = [];
 
   querySnapshot.forEach((doc) => {
+    const data = doc.data();
     products.push({
-      id: doc.id,
-      ...doc.data(),
-      price: Number(doc.data().price),
+      productId: doc.id, // Firestore 문서 ID를 productId로 사용
+      sellerId: data.sellerId,
+      productName: data.productName,
+      productStock: data.productStock,
+      productPrice: Number(data.productPrice),
+      productCategory: data.productCategory,
+      productDescription: data.productDescription,
+      productOptions: data.productOptions,
+      productImageUrls: data.productImageUrls,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     } as Product);
   });
 
