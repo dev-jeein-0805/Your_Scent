@@ -4,6 +4,7 @@ import {
   useEffect,
   ReactNode,
   Dispatch,
+  useState,
 } from "react";
 
 interface CartItem {
@@ -54,9 +55,20 @@ type CartAction =
   | DecreaseQuantityAction
   | LoadCartAction;
 
-const CartContext = createContext<
-  { cart: CartState; dispatch: Dispatch<CartAction> } | undefined
->(undefined);
+export interface CartContextType {
+  cart: CartState;
+  dispatch: Dispatch<CartAction>;
+  totalAmount: number;
+  shippingCost: number;
+  finalAmount: number;
+  orderName: string;
+}
+
+// const CartContext = createContext<
+//   { cart: CartState; dispatch: Dispatch<CartAction> } | undefined
+// >(undefined);
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
@@ -96,12 +108,46 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     return localData ? JSON.parse(localData) : [];
   });
 
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [shippingCost, setShippingCost] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [orderName, setOrderName] = useState("");
+
+  // useEffect(() => {
+  //   localStorage.setItem("cart", JSON.stringify(cart));
+  // }, [cart]);
+
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
+
+    const totalAmount = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    const shippingCost = totalAmount >= 50000 ? 0 : 3000;
+    setTotalAmount(totalAmount);
+    setShippingCost(shippingCost);
+    setFinalAmount(totalAmount + shippingCost);
+
+    const totalQuantity = cart.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+    const firstItemTitle = cart.length > 0 ? cart[0].title : "";
+    setOrderName(`${firstItemTitle} 외 총 ${totalQuantity} 개`);
   }, [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, dispatch }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        dispatch,
+        totalAmount,
+        shippingCost,
+        finalAmount,
+        orderName,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
