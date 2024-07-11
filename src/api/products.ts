@@ -20,7 +20,8 @@ export const getAllProducts = async (): Promise<Product[]> => {
 
   return querySnapshot.docs.map((doc) => {
     const data = doc.data() as Product; // 명시적으로 Product 타입으로 변환
-    return { ...data, id: doc.id, price: Number(doc.data().price) };
+    console.log(data);
+    return { ...data, productId: doc.id, price: Number(doc.data().price) };
   });
 };
 
