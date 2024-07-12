@@ -18,6 +18,7 @@ import { CartContext } from "../contexts/CartContext";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
   const [isSeller, setIsSeller] = useState<boolean>(false);
   const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -37,24 +38,25 @@ export default function Navbar() {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setIsSeller(userData.isSeller);
+          setNickname(userData.nickname);
 
           const user: UserInfo = {
             email: firebaseUser.email || "",
             isSeller: userData.isSeller,
+            nickname: userData.nickname,
           };
           dispatch({ type: "SET_USER", payload: user }); // authState.user를 업데이트
         }
       } else {
         setUser(null);
         setIsSeller(false);
+        setNickname(null);
         dispatch({ type: "LOGOUT" }); // authState.user를 null로 업데이트
       }
     });
 
     return () => unsubscribe();
   }, [dispatch]);
-
-  // console.log(authState.user); // 로그인 상태 확인
 
   const handleLogout = async () => {
     try {
@@ -81,6 +83,7 @@ export default function Navbar() {
       <nav className="flex items-center gap-4 font-semibold">
         {authState.user ? (
           <>
+            <div>{nickname} 님, 안녕하세요!☺️</div>
             <Link to="products">Products</Link>
             <Link to="products/new" className="text-2xl">
               <BsFillPencilFill />
