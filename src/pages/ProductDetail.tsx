@@ -58,6 +58,7 @@ const ProductDetail = () => {
           price: product.productPrice,
           quantity,
           imageUrl: product.productImageUrls ? product.productImageUrls[0] : "",
+          sellerId: product.sellerId,
         },
       });
     }
@@ -113,9 +114,18 @@ const ProductDetail = () => {
               -
             </button>
             {quantity}
-            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              disabled={quantity >= product.productStock} // 수량 버튼 비활성화 조건 추가
+            >
+              +
+            </button>
           </p>
-          {isInCart ? (
+          {product.productStock <= 0 ? (
+            <button className="mt-4 text-red-700" disabled>
+              Sold Out
+            </button>
+          ) : isInCart ? (
             <button className="mt-4" onClick={handleGoToCart}>
               장바구니 보기
             </button>

@@ -77,10 +77,11 @@ const Cart = () => {
           상품 총액:
           {totalAmount.toLocaleString()}원
         </p>
-        <p>배송비: {shippingCost.toLocaleString()}원</p>
-        <p>총 합계: {finalAmount.toLocaleString()}원</p>
+        {/* <p>배송비: {shippingCost.toLocaleString()}원</p> */}
+        <p>배송비: {0}원</p>
+        {/* <p>총 합계: {finalAmount.toLocaleString()}원</p> */}
+        <p>총 합계: {totalAmount.toLocaleString()}원</p>
       </div>
-      {/* <button>결제하기</button> */}
       <OrderConfirmModal />
     </div>
   );

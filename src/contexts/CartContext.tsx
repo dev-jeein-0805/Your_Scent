@@ -13,6 +13,7 @@ interface CartItem {
   price: number;
   quantity: number;
   imageUrl: string;
+  sellerId: string;
 }
 
 type CartState = CartItem[];
@@ -47,13 +48,18 @@ interface LoadCartAction {
   payload: CartState;
 }
 
+interface ClearCartAction {
+  type: "CLEAR_CART";
+}
+
 type CartAction =
   | AddToCartAction
   | RemoveFromCartAction
   | UpdateCartItemAction
   | IncreaseQuantityAction
   | DecreaseQuantityAction
-  | LoadCartAction;
+  | LoadCartAction
+  | ClearCartAction;
 
 export interface CartContextType {
   cart: CartState;
@@ -62,6 +68,7 @@ export interface CartContextType {
   shippingCost: number;
   finalAmount: number;
   orderName: string;
+  clearCart: () => void;
 }
 
 // const CartContext = createContext<
@@ -96,9 +103,15 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       );
     case "LOAD_CART":
       return action.payload;
+    case "CLEAR_CART":
+      return [];
     default:
       return state;
   }
+};
+
+const clearCart = (dispatch: Dispatch<CartAction>) => {
+  dispatch({ type: "CLEAR_CART" });
 };
 
 const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -137,6 +150,8 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     setOrderName(`${firstItemTitle} 외 총 ${totalQuantity} 개`);
   }, [cart]);
 
+  const handleClearCart = () => clearCart(dispatch);
+
   return (
     <CartContext.Provider
       value={{
@@ -146,6 +161,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
         shippingCost,
         finalAmount,
         orderName,
+        clearCart: handleClearCart,
       }}
     >
       {children}
