@@ -10,8 +10,8 @@ import { CartContext, CartProvider } from "./CartContext";
 export interface UserInfo {
   email: string;
   isSeller: boolean;
+  nickname: string;
   // password: string;
-  // username : string;
 }
 
 // 상태 타입 정의
