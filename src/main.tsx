@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import EditProduct from "./pages/EditProduct.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "./contexts/CartContext.tsx";
+import SalesHistory from "./pages/SalesHistory.tsx";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={["seller"]}>
                 <EditProduct />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "products/salesHistory",
+            element: (
+              <ProtectedRoute allowedRoles={["seller"]}>
+                <SalesHistory />
               </ProtectedRoute>
             ),
           },
