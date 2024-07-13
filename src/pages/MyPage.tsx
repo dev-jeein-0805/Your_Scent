@@ -18,8 +18,9 @@ export default function MyPage() {
           <Link to="cart">장바구니</Link>
           {isSeller ? (
             <>
-              <Link to="products/new">판매 상품 등록</Link>
-              <Link to="products">판매 중인 상품 리스트</Link>
+              <Link to="products/new">판매 상품 등록하기</Link>
+              <Link to="products">판매 등록된 상품 리스트(수정/삭제)</Link>
+              <Link to="products/salesHistory">판매 상품 상세 내역</Link>
             </>
           ) : null}
         </div>
