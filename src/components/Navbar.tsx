@@ -61,7 +61,7 @@ export default function Navbar() {
     try {
       await logOut(dispatch, navigate);
     } catch (error) {
-      console.error("Logout error: ", error);
+      console.error("Logout error: ", error, user, isSeller);
     }
   };
 
