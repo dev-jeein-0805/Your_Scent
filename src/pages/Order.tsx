@@ -10,7 +10,8 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import OrderConfirmModal from "../components/OrderConfirmModal";
 
 // window 객체에 IMP를 추가
 declare global {
@@ -26,9 +27,24 @@ interface IResponse {
   error_msg: string;
 }
 
+interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+  sellerId: string;
+  productStock: number;
+}
+
 const Order = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { selectedItems, totalPaymentAmount } = location.state || {
+    selectedItems: [],
+    totalPaymentAmount: 0,
+  };
 
   // 현재 로그인한 사용자의 정보를 가져옴
   useEffect(() => {
@@ -45,7 +61,7 @@ const Order = () => {
     return <div>장바구니가 비어 있습니다.</div>;
   }
 
-  const { cart, finalAmount, totalAmount, orderName, clearCart } = cartContext;
+  const { cart, orderName, clearCart } = cartContext;
 
   const [buyerInfo, setBuyerInfo] = useState({
     name: "",
@@ -65,7 +81,7 @@ const Order = () => {
   const handleCheckout = async () => {
     try {
       await runTransaction(db, async (transaction) => {
-        cart.forEach((item) => {
+        selectedItems.forEach((item: CartItem) => {
           const productRef = doc(db, "products", item.id);
           transaction.update(productRef, {
             productStock: increment(-item.quantity),
@@ -91,7 +107,7 @@ const Order = () => {
       pay_method: "card", // 결제수단
       merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
       // amount: finalAmount, // 결제금액
-      amount: totalAmount, // 테스트용
+      amount: totalPaymentAmount, // 테스트용
       name: orderName, // 주문명
       buyer_name: buyerInfo.name, // 구매자 이름
       buyer_tel: buyerInfo.phone, // 구매자 전화번호
@@ -111,7 +127,7 @@ const Order = () => {
         const ordersCollection = collection(db, "orders");
 
         await Promise.all(
-          cart.map(async (item) => {
+          selectedItems.map(async (item: CartItem) => {
             const orderDocRef = doc(ordersCollection); // 문서 참조를 먼저 생성합니다.
             const orderId = orderDocRef.id; // 문서 ID를 가져옵니다.
 
@@ -141,7 +157,7 @@ const Order = () => {
       // 결제가 실패하면 재고 복구
       try {
         await runTransaction(db, async (transaction) => {
-          cart.forEach((item) => {
+          selectedItems.forEach((item: CartItem) => {
             const productRef = doc(db, "products", item.id);
             transaction.update(productRef, {
               productStock: increment(item.quantity),
@@ -156,48 +172,134 @@ const Order = () => {
   };
 
   return (
-    <div>
-      <h2>결제 페이지</h2>
-      <form>
-        <div>
-          <label>이름:</label>
-          <input
-            type="text"
-            name="name"
-            value={buyerInfo.name}
-            onChange={handleInputChange}
-          />
+    <>
+      <div className="w-200 mx-auto">
+        <div className="text-2xl pt-10 pb-2">배송지 정보</div>
+        <form>
+          <table className="w-full">
+            <tbody>
+              <tr>
+                <th className="border bg-gray-200 p-2 text-left w-1/4">
+                  받는 분
+                </th>
+                <td className="border border-gray-400 p-2 w-3/4">
+                  <input
+                    type="text"
+                    name="name"
+                    value={buyerInfo.name}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-50 rounded-md"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className="bg-gray-200 p-2 text-left w-1/4">연락처</th>
+                <td className="border border-gray-400 p-2 w-3/4">
+                  <input
+                    type="text"
+                    name="phone"
+                    value={buyerInfo.phone}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-50 rounded-md"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className="bg-gray-200 p-2 text-left w-1/4">이메일</th>
+                <td className="border border-gray-400 p-2 w-3/4">
+                  <input
+                    type="email"
+                    name="email"
+                    value={buyerInfo.email}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-60 rounded-md"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className="bg-gray-200 p-2 text-left w-1/4">주소</th>
+                <td className="border border-gray-400 p-2 w-3/4">
+                  <input
+                    type="text"
+                    name="address"
+                    value={buyerInfo.address}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-50 rounded-md"
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    value={buyerInfo.address}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-full rounded-md"
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    value={buyerInfo.address}
+                    onChange={handleInputChange}
+                    className="border border-gray-400 p-2 w-full rounded-md"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className="bg-gray-200 p-2 text-left w-1/4">
+                  최종 결제 금액
+                </th>
+                <td className="border border-gray-400 p-2 w-3/4">
+                  <span>{totalPaymentAmount.toLocaleString()}원</span>
+                  <span className="text-red-600">
+                    &nbsp;(50,000원 미만 배송비 3,000원 추가)
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+        <div className="flex items-center justify-center">
+          <OrderConfirmModal onCheckout={handleCheckout} />
         </div>
-        <div>
-          <label>연락처:</label>
-          <input
-            type="text"
-            name="phone"
-            value={buyerInfo.phone}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label>이메일:</label>
-          <input
-            type="email"
-            name="email"
-            value={buyerInfo.email}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label>주소:</label>
-          <input
-            type="text"
-            name="address"
-            value={buyerInfo.address}
-            onChange={handleInputChange}
-          />
-        </div>
-      </form>
-      <button onClick={handleCheckout}>결제하기</button>
-    </div>
+      </div>
+
+      <div className="w-200 mx-auto text-2xl pt-10 pb-2">주문 정보</div>
+      <table className="w-200 mx-auto border-collapse">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="py-2 px-4 text-left">
+              <div className="pl-2 flex items-center">상품</div>
+            </th>
+            <th className="py-2 px-4 text-center">수량</th>
+            <th className="py-2 px-4 text-center">가격</th>
+            <th className="py-2 px-4 text-center">총 금액</th>
+          </tr>
+        </thead>
+        <tbody>
+          {selectedItems.map((item: CartItem) => (
+            <tr key={item.id} className="border-b">
+              <td className="py-4 px-4 flex items-center">
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-20 h-20 mr-4"
+                />
+                <div>{item.title}</div>
+              </td>
+              <td className="py-4 px-4 text-center">
+                <div className="flex items-center justify-center">
+                  <div className="mx-2">{item.quantity}</div>
+                </div>
+              </td>
+              <td className="py-4 px-4 text-center">
+                {item.price.toLocaleString()}원
+              </td>
+              <td className="py-4 px-4 text-center">
+                {(item.price * item.quantity).toLocaleString()}원
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 };
 

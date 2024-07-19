@@ -3,6 +3,8 @@ import { Product } from "../types/Product";
 import { useState, useEffect, useContext } from "react";
 import { getItemsByCategory } from "../api/getItemsByCategory";
 import { CartContext } from "../contexts/CartContext";
+import { auth } from "../api/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -12,6 +14,7 @@ const ProductDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const cartContext = useContext(CartContext);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // 장바구니에 현재 상품이 담겨 있는지 확인
   const isInCart = cartContext?.cart?.some(
@@ -19,6 +22,15 @@ const ProductDetail = () => {
   );
 
   useEffect(() => {
+    // 현재 로그인한 사용자의 정보를 가져옴
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+      }
+    });
+
     if (product) {
       getItemsByCategory(product.productCategory).then((products) => {
         setRecommendedProducts(
@@ -48,19 +60,27 @@ const ProductDetail = () => {
   );
 
   const handleAddToCart = async () => {
-    if (cartContext?.dispatch) {
-      cartContext.dispatch({
-        type: "ADD_TO_CART",
-        payload: {
-          // ...product,
-          id: product.productId,
-          title: product.productName,
-          price: product.productPrice,
-          quantity,
-          imageUrl: product.productImageUrls ? product.productImageUrls[0] : "",
-          sellerId: product.sellerId,
-        },
-      });
+    if (userId) {
+      // 로그인한 사용자인 경우
+      if (cartContext?.dispatch) {
+        cartContext.dispatch({
+          type: "ADD_TO_CART",
+          payload: {
+            id: product.productId,
+            title: product.productName,
+            price: product.productPrice,
+            quantity,
+            imageUrl: product.productImageUrls
+              ? product.productImageUrls[0]
+              : "",
+            sellerId: product.sellerId,
+            productStock: product.productStock,
+          },
+        });
+      }
+    } else {
+      // 로그인하지 않은 사용자인 경우
+      navigate("/login");
     }
   };
 
@@ -77,15 +97,15 @@ const ProductDetail = () => {
 
   return (
     <>
-      <section className="flex flex-col md:flex-row p-4 justify-center mb-4">
+      <section className="w-350 mx-auto flex flex-col md:flex-row p-4 justify-center mt-10 mb-4">
         {product.productImageUrls && product.productImageUrls.length > 0 && (
           <div className="w-full px-4 basis-4/12">
             <img
-              className="w-full"
+              className="w-80"
               src={product.productImageUrls[0]}
               alt={product.productName}
             />
-            <div className="grid grid-cols-3 gap-2 mt-4">
+            {/* <div className="grid grid-cols-3 gap-2 mt-4">
               {product.productImageUrls.slice(1).map((url, index) => (
                 <img
                   className="w-full"
@@ -94,7 +114,7 @@ const ProductDetail = () => {
                   alt={`${product.productName} ${index + 1}`}
                 />
               ))}
-            </div>
+            </div> */}
           </div>
         )}
         <div className="w-full basis-5/12 flex flex-col p-4">
@@ -131,12 +151,12 @@ const ProductDetail = () => {
             </button>
           ) : (
             <button className="mt-4" onClick={handleAddToCart}>
-              장바구니 담기
+              {userId ? "장바구니 담기" : "로그인 후 장바구니 담기"}
             </button>
           )}
         </div>
       </section>
-      <section className="p-4 mt-0">
+      <section className="p-4 mt-0 w-350 mx-auto">
         <h2 className="text-2xl font-bold py-2">추천상품</h2>
         <div className="flex flex-wrap">
           {displayedProducts.map((recommendedProduct, index) => (

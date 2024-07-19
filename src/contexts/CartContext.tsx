@@ -14,6 +14,7 @@ interface CartItem {
   quantity: number;
   imageUrl: string;
   sellerId: string;
+  productStock: number;
 }
 
 type CartState = CartItem[];
@@ -64,16 +65,9 @@ type CartAction =
 export interface CartContextType {
   cart: CartState;
   dispatch: Dispatch<CartAction>;
-  totalAmount: number;
-  shippingCost: number;
-  finalAmount: number;
   orderName: string;
   clearCart: () => void;
 }
-
-// const CartContext = createContext<
-//   { cart: CartState; dispatch: Dispatch<CartAction> } | undefined
-// >(undefined);
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -91,13 +85,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       );
     case "INCREASE_QUANTITY":
       return state.map((item) =>
-        item.id === action.payload.id
+        item.id === action.payload.id && item.quantity < item.productStock
           ? { ...item, quantity: item.quantity + 1 }
           : item
       );
     case "DECREASE_QUANTITY":
       return state.map((item) =>
-        item.id === action.payload.id && item.quantity > 0
+        item.id === action.payload.id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       );
@@ -121,26 +115,10 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     return localData ? JSON.parse(localData) : [];
   });
 
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [shippingCost, setShippingCost] = useState(0);
-  const [finalAmount, setFinalAmount] = useState(0);
   const [orderName, setOrderName] = useState("");
-
-  // useEffect(() => {
-  //   localStorage.setItem("cart", JSON.stringify(cart));
-  // }, [cart]);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
-
-    const totalAmount = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    const shippingCost = totalAmount >= 50000 ? 0 : 3000;
-    setTotalAmount(totalAmount);
-    setShippingCost(shippingCost);
-    setFinalAmount(totalAmount + shippingCost);
 
     const totalQuantity = cart.reduce(
       (total, item) => total + item.quantity,
@@ -157,9 +135,6 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
       value={{
         cart,
         dispatch,
-        totalAmount,
-        shippingCost,
-        finalAmount,
         orderName,
         clearCart: handleClearCart,
       }}
