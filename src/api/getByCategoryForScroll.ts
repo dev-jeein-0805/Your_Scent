@@ -69,7 +69,6 @@ export const getByCategoryForScroll = async (
 
   try {
     const querySnapshot = await getDocs(q);
-    console.log("QuerySnapshot: ", querySnapshot);
     const products: Product[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();

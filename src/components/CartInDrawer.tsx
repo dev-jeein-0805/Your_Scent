@@ -3,7 +3,7 @@ import { CartContext } from "../contexts/CartContext";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
-const Cart = () => {
+const CartInDrawer = ({ onClose }: { onClose: () => void }) => {
   const navigate = useNavigate();
   const cartContext = useContext(CartContext);
 
@@ -73,99 +73,85 @@ const Cart = () => {
     }
   };
 
-  const handleMoveToOrder = () => {
-    // navigate("/order");
-    const selectedItemsDetails = cart.filter((item) =>
-      selectedItems.includes(item.id)
-    );
-    const totalPaymentAmount =
-      totalAmount + (totalAmount > 0 ? shippingCost : 0);
-
-    navigate("/order", {
-      state: { selectedItems: selectedItemsDetails, totalPaymentAmount },
-    });
+  const handleMoveToCart = () => {
+    onClose(); // Close the drawer
+    navigate("/mypage/cart");
   };
 
   return (
-    <div className="w-full sm:w-130 md:w-300 mx-auto">
+    <div className="w-full mx-auto">
       <div className="text-2xl mt-4 ml-2">장바구니</div>
       <div className="flex justify-between items-center mb-4"></div>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="py-2 px-4 text-left">
+      <div className="space-y-2">
+        <div className="bg-gray-200 rounded-xs pl-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isSelectAll}
+                onChange={handleSelectAll}
+                className="mr-2"
+              />
+              <span>{isSelectAll ? "전체 해제" : "전체 선택"}</span>
+            </label>
+          </div>
+        </div>
+        {cart.map((item) => (
+          <div
+            key={item.id}
+            className="border rounded-md p-4 flex justify-between items-center"
+          >
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={selectedItems.includes(item.id)}
+                onChange={() => handleSelectItem(item.id)}
+                className="mr-4"
+              />
               <div className="flex items-center">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isSelectAll}
-                    onChange={handleSelectAll}
-                    className="mr-2"
-                  />
-                  <span>{isSelectAll ? "전체 해제" : "전체 선택"}</span>
-                </label>
-              </div>
-            </th>
-            <th className="py-2 px-4 text-center">수량</th>
-            <th className="py-2 px-4 text-center">가격</th>
-            <th className="py-2 px-4 text-center">총 금액</th>
-            <th className="py-2 px-4 text-center">삭제</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cart.map((item) => (
-            <tr key={item.id} className="border-b">
-              <td className="py-4 px-4 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.includes(item.id)}
-                  onChange={() => handleSelectItem(item.id)}
-                  className="mr-4"
-                />
                 <img
                   src={item.imageUrl}
                   alt={item.title}
                   className="w-20 h-20 mr-4"
                 />
                 <div>{item.title}</div>
-              </td>
-              <td className="py-4 px-4 text-center">
-                <div className="flex items-center justify-center">
-                  <button
-                    onClick={() => decreaseQuantity(item.id)}
-                    className="mr-2"
-                  >
-                    -
-                  </button>
-                  <div className="mx-2">{item.quantity}</div>
-                  <button
-                    onClick={() => increaseQuantity(item.id)}
-                    className="ml-2"
-                  >
-                    +
-                  </button>
-                </div>
-              </td>
-              <td className="py-4 px-4 text-center">
-                {item.price.toLocaleString()}원
-              </td>
-              <td className="py-4 px-4 text-center">
-                {(item.price * item.quantity).toLocaleString()}원
-              </td>
-              <td className="py-4 px-4 text-center">
-                <button onClick={() => handleRemove(item.id)}>
-                  <RiDeleteBin5Fill />
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="flex items-center justify-center mr-4">
+                <button
+                  onClick={() => decreaseQuantity(item.id)}
+                  className="mr-2"
+                >
+                  -
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <div className="mx-2">{item.quantity}</div>
+                <button
+                  onClick={() => increaseQuantity(item.id)}
+                  className="ml-2"
+                >
+                  +
+                </button>
+              </div>
+              <div className="mr-4">
+                {(item.price * item.quantity).toLocaleString()}원
+              </div>
+              <button
+                onClick={() => handleRemove(item.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <RiDeleteBin5Fill />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="flex justify-end">
         <table className="max-w-sm my-6">
           <tbody>
             <tr>
-              <th className="pl-4 py-2 text-gray-500 font-normal text-left">
+              <th className="px-4 py-2 text-gray-500 font-normal text-left">
                 상품 총 금액
               </th>
               <td className="px-4 font-bold text-right">
@@ -184,7 +170,7 @@ const Cart = () => {
               <th className="px-4 pb-2 text-black font-bold text-left">
                 총 결제 금액
               </th>
-              <td className="px-4 font-bold text-right text-blue-600">
+              <td className="px-4 font-bold text-right text-blue-700">
                 {(
                   totalAmount + (totalAmount > 0 ? shippingCost : 0)
                 ).toLocaleString()}
@@ -196,14 +182,14 @@ const Cart = () => {
       </div>
       <div className="flex justify-end">
         <button
-          className="px-20 py-2 mx-auto rounded-md bg-blue-400"
-          onClick={handleMoveToOrder}
+          className="w-full px-4 py-2 rounded-md bg-blue-400"
+          onClick={handleMoveToCart}
         >
-          주문하기
+          장바구니 보기
         </button>
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default CartInDrawer;

@@ -12,7 +12,7 @@ export default function MyPage() {
   return (
     <>
       {isBasePath && (
-        <div className="flex flex-col">
+        <div className="w-300 mx-auto my-8 flex flex-col gap-4 text-3xl">
           <Link to="editProfile">내 정보 수정</Link>
           <Link to="orderHistory">구매 내역</Link>
           <Link to="cart">장바구니</Link>
