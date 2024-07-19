@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BsFillPencilFill } from "react-icons/bs";
 import { RiFlowerFill } from "react-icons/ri";
 import { auth, logOut } from "../api/firebase";
 import {
@@ -75,7 +74,7 @@ export default function Navbar() {
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <header className="flex justify-between border-b border-gray-300 p-2">
+    <header className="w-350 flex justify-between border-b border-gray-300 mx-auto p-2">
       <Link to="/" className="flex items-center text-1xl text-brand">
         <RiFlowerFill />
         <h1>Your Scent</h1>
@@ -83,15 +82,16 @@ export default function Navbar() {
       <nav className="flex items-center gap-4 font-semibold">
         {authState.user ? (
           <>
-            <div>{nickname} 님, 안녕하세요!☺️</div>
-            <Link to="products">Products</Link>
-            <Link to="products/new" className="text-2xl">
-              <BsFillPencilFill />
-            </Link>
-            <button onClick={() => setDrawerOpen(true)} className="text-2xl">
+            <div>{nickname} 님, 안녕하세요!</div>
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="w-10 h-12 relative text-2xl bg-transparent"
+            >
               <ShopperBag />
               {totalQuantity > 0 && (
-                <div className="rounded-full bg-red-500">{totalQuantity}</div>
+                <div className="absolute top-0.5 right-0.5 text-white rounded-full bg-red-500 px-2 py-1 text-xs">
+                  {totalQuantity}
+                </div>
               )}
             </button>
             <Link to="/mypage">My Page</Link>

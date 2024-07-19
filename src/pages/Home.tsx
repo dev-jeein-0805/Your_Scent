@@ -73,10 +73,10 @@ const Home = () => {
 
   return (
     <>
-      <div className="mt-10">
-        <img src={banner} />
+      <div className="mt-10 flex items-center justify-center">
+        <img className="w-350" src={banner} />
       </div>
-      <div>
+      <div className="w-350 mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
           Object.keys(groupedProducts).map((category) => (
             <div key={category}>

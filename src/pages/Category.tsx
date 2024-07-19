@@ -101,7 +101,7 @@ const Category = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
+    <div className="w-350 mx-auto">
       <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold">{category}</h2>
       <div className="flex justify-end mr-4 mb-4">
         <button

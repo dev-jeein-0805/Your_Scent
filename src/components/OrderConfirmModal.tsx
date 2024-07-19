@@ -11,26 +11,38 @@ import {
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
 
-const OrderConfirmModal = () => {
+interface OrderConfirmModalProps {
+  onCheckout: () => void; // onCheckout 함수 타입 정의
+}
+
+const OrderConfirmModal = ({ onCheckout }: OrderConfirmModalProps) => {
   const navigate = useNavigate();
 
   const handleConfirm = () => {
+    onCheckout();
     navigate("/order");
   };
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>결제하기</AlertDialogTrigger>
+      <AlertDialogTrigger className="my-4 py-2 font-bold w-full bg-blue-200">
+        &nbsp;&nbsp;결제하기&nbsp;&nbsp;
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>정말 바로 결제하시겠어요?</AlertDialogTitle>
+          <AlertDialogTitle>결제 정보를 정확히 확인하셨나요?</AlertDialogTitle>
           <AlertDialogDescription>
-            (내용 추가할 게 있을까?)
+            아래 [결제하기]를 누르면 바로 결제창으로 넘어갑니다.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>쇼핑 계속하기</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>
+          <AlertDialogCancel className="bg-gray-200 p-2 rounded-md">
+            쇼핑 계속하기
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirm}
+            className="bg-blue-500 p-2 rounded-md"
+          >
             결제하기
           </AlertDialogAction>
         </AlertDialogFooter>

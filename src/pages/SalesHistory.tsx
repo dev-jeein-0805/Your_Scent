@@ -40,9 +40,11 @@ const SalesHistory = () => {
       salesData.map(async (sale) => {
         const productDoc = await getDoc(doc(db, "products", sale.productId));
         const productData = productDoc.data() as Product;
+        console.log("productData : ", productData);
 
         const buyerDoc = await getDoc(doc(db, "users", sale.buyerId));
         const buyerData = buyerDoc.data() as User;
+        console.log("buyerData : ", buyerData);
 
         return {
           ...sale,

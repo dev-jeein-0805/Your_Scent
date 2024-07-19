@@ -10,7 +10,7 @@ import { CartContext, CartProvider } from "./CartContext";
 export interface UserInfo {
   email: string;
   isSeller: boolean;
-  nickname: string;
+  nickname?: string;
   // password: string;
 }
 
