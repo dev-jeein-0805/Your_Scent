@@ -1,9 +1,11 @@
 # 🌷 프로젝트 소개
 
-당신의 취향에 따라 알맞은 향을 추천 드려요. (내용 업데이트)
+다양한 필터링 기능으로 사용자의 취향에 따라 알맞은 향을 추천 드립니다.
 
-- 프로젝트에 대해 간략히 소개해 주세요.
-- 배포 url, test id, password 등을 함께 작성해 주셔도 좋습니다.
+https://your-scent.vercel.app/
+
+- 판매자 계정 : email : broad@casting.com / pw : tvnews1004!
+- 구매자 계정 : email : animal@peace.com / pw : rabbit5959@
   <br>
 
 ## 🕰️ 개발 기간
@@ -11,9 +13,6 @@
 - 24.06.19일 - 24.07.16일 (4주)
 
 ### ⚙️ 기술 스택
-
-    - 사용한 기술과 라이브러리 등을 작성해 주세요.
-    - 위 기술을 사용한 이유(기술적 의사결정)가 드러나게 작성해도 좋습니다.
 
 - `TypeScript`
 - `Vite`
@@ -28,8 +27,62 @@
 
 ### 서비스 아키텍쳐
 
-    - 파일 구조도에 대해 작성해 주세요.
-    - 참고) 구조도 작성 툴 (VS code - file tree generator)
+📦src
+┣ 📂api
+┃ ┣ 📜firebase.ts
+┃ ┣ 📜getByCategoryForScroll.ts
+┃ ┣ 📜getItemsByCategory.ts
+┃ ┣ 📜getProductsByCategory.ts
+┃ ┗ 📜products.ts
+┣ 📂components
+┃ ┣ 📂lib
+┃ ┃ ┗ 📜utils.ts
+┃ ┣ 📂ui
+┃ ┃ ┣ 📜alert-dialog.tsx
+┃ ┃ ┣ 📜Button.tsx
+┃ ┃ ┗ 📜shadcnButton.tsx
+┃ ┣ 📜Cart.tsx
+┃ ┣ 📜CartInDrawer.tsx
+┃ ┣ 📜Drawer.tsx
+┃ ┣ 📜FileUpload.tsx
+┃ ┣ 📜Navbar.tsx
+┃ ┣ 📜OrderConfirmModal.tsx
+┃ ┣ 📜Products.tsx
+┃ ┗ 📜ProtectedRoute.tsx
+┣ 📂contexts
+┃ ┣ 📜AuthContext.tsx
+┃ ┗ 📜CartContext.tsx
+┣ 📂hooks
+┃ ┣ 📜CheckoutFunction.tsx
+┃ ┗ 📜useCurrentUserId.tsx
+┣ 📂pages
+┃ ┣ 📜AllProducts.tsx
+┃ ┣ 📜Category.tsx
+┃ ┣ 📜EditProduct.tsx
+┃ ┣ 📜EditProfile.tsx
+┃ ┣ 📜Home.tsx
+┃ ┣ 📜Login.tsx
+┃ ┣ 📜MyPage.tsx
+┃ ┣ 📜NewProduct.tsx
+┃ ┣ 📜NotFound.tsx
+┃ ┣ 📜Order.tsx
+┃ ┣ 📜OrderHistory.tsx
+┃ ┣ 📜ProductDetail.tsx
+┃ ┣ 📜SalesHistory.tsx
+┃ ┗ 📜SignUp.tsx
+┣ 📂routers
+┣ 📂styles
+┣ 📂types
+┃ ┣ 📜Order.ts
+┃ ┗ 📜Product.ts
+┣ 📂utils
+┃ ┣ 📜banner.png
+┃ ┗ 📜ShopperBag.tsx
+┣ 📜App.tsx
+┣ 📜custom.d.ts
+┣ 📜index.css
+┣ 📜main.tsx
+┗ 📜vite-env.d.ts
 
 ## 📌 주요 기능
 
