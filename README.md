@@ -27,63 +27,7 @@ https://your-scent.vercel.app/
 
 ### 서비스 아키텍쳐
 
-📦src
-┣ 📂api
-┃ ┣ 📜firebase.ts
-┃ ┣ 📜getByCategoryForScroll.ts
-┃ ┣ 📜getItemsByCategory.ts
-┃ ┣ 📜getProductsByCategory.ts
-┃ ┗ 📜products.ts
-┣ 📂components
-┃ ┣ 📂lib
-┃ ┃ ┗ 📜utils.ts
-┃ ┣ 📂ui
-┃ ┃ ┣ 📜alert-dialog.tsx
-┃ ┃ ┣ 📜Button.tsx
-┃ ┃ ┗ 📜shadcnButton.tsx
-┃ ┣ 📜Cart.tsx
-┃ ┣ 📜CartInDrawer.tsx
-┃ ┣ 📜Drawer.tsx
-┃ ┣ 📜FileUpload.tsx
-┃ ┣ 📜Navbar.tsx
-┃ ┣ 📜OrderConfirmModal.tsx
-┃ ┣ 📜Products.tsx
-┃ ┗ 📜ProtectedRoute.tsx
-┣ 📂contexts
-┃ ┣ 📜AuthContext.tsx
-┃ ┗ 📜CartContext.tsx
-┣ 📂hooks
-┃ ┣ 📜CheckoutFunction.tsx
-┃ ┗ 📜useCurrentUserId.tsx
-┣ 📂pages
-┃ ┣ 📜AllProducts.tsx
-┃ ┣ 📜Category.tsx
-┃ ┣ 📜EditProduct.tsx
-┃ ┣ 📜EditProfile.tsx
-┃ ┣ 📜Home.tsx
-┃ ┣ 📜Login.tsx
-┃ ┣ 📜MyPage.tsx
-┃ ┣ 📜NewProduct.tsx
-┃ ┣ 📜NotFound.tsx
-┃ ┣ 📜Order.tsx
-┃ ┣ 📜OrderHistory.tsx
-┃ ┣ 📜ProductDetail.tsx
-┃ ┣ 📜SalesHistory.tsx
-┃ ┗ 📜SignUp.tsx
-┣ 📂routers
-┣ 📂styles
-┣ 📂types
-┃ ┣ 📜Order.ts
-┃ ┗ 📜Product.ts
-┣ 📂utils
-┃ ┣ 📜banner.png
-┃ ┗ 📜ShopperBag.tsx
-┣ 📜App.tsx
-┣ 📜custom.d.ts
-┣ 📜index.css
-┣ 📜main.tsx
-┗ 📜vite-env.d.ts
-
+<img src="./src/utils/GenerateTree.png">
 ## 📌 주요 기능
 
     - 프로젝트에서 제공하는 주요한 기능들에 대해 설명해 주세요.
