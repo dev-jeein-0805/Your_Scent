@@ -61,7 +61,7 @@ const Order = () => {
     return <div>장바구니가 비어 있습니다.</div>;
   }
 
-  const { cart, orderName, clearCart } = cartContext;
+  const { orderName, clearCart } = cartContext;
 
   const [buyerInfo, setBuyerInfo] = useState({
     name: "",
@@ -119,7 +119,7 @@ const Order = () => {
   };
 
   const callback = async (response: IResponse) => {
-    const { success, merchant_uid, error_msg } = response;
+    const { success, error_msg } = response;
 
     if (success) {
       try {

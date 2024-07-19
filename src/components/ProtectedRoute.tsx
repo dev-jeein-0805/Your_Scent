@@ -12,6 +12,7 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const { user, isSeller } = useAuthState();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  console.log(isLoading);
   //  AuthContext 초기화 관여
   useEffect(() => {
     if (user !== null) {

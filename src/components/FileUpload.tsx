@@ -34,6 +34,7 @@ const FileUpload = ({ onFileSelect }: FileUploadProps) => {
       onFileSelect(filesArray);
     } else {
       onFileSelect(null);
+      console.log(selectedFiles);
     }
   };
 
