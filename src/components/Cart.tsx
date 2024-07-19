@@ -16,13 +16,13 @@ const Cart = () => {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
-  const [finalAmount, setFinalAmount] = useState(0);
+  // const [finalAmount, setFinalAmount] = useState(0);
 
   useEffect(() => {
     setTotalAmount(calculateSelectedItemsTotal());
     const shippingCost = totalAmount >= 50000 ? 0 : 3000;
     setShippingCost(shippingCost);
-    setFinalAmount(totalAmount + shippingCost);
+    // setFinalAmount(totalAmount + shippingCost);
   }, [selectedItems, cart, totalAmount]);
 
   const calculateSelectedItemsTotal = () => {
