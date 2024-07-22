@@ -80,8 +80,8 @@ const SalesHistory = () => {
   }
 
   return (
-    <div>
-      <h2>판매 내역</h2>
+    <div className="w-350 mx-auto">
+      <div className="text-3xl my-3">판매 내역</div>
       {sales.map((sale) => (
         <div
           className="border border-solid border-black mt-2 p-2 mx-40"

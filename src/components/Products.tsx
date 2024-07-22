@@ -40,11 +40,11 @@ const Products = () => {
   );
 
   return (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg-grid-cols-4 gap-4 p-4">
+    <ul className="grid grid-cols-4 gap-4 p-4">
       {filteredProducts && filteredProducts.length > 0 ? (
         filteredProducts.map((product: Product) => (
           <li
-            className="rounded-lg shadow-md overflow-hidden cursor-pointer"
+            className="w-72 rounded-lg shadow-md overflow-hidden cursor-pointer"
             key={product.productId}
             onClick={() => handleProductClick(product)}
           >

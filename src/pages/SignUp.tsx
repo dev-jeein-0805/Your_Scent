@@ -118,7 +118,7 @@ const SignUp = () => {
               required
             />
           </div>
-          <div className="flex ml-8">
+          <div className="flex">
             {emailError && (
               <div className="text-red-500 text-sm mt-1">{emailError}</div>
             )}
@@ -139,7 +139,7 @@ const SignUp = () => {
               required
             />
           </div>
-          <div className="flex ml-8">
+          <div className="flex">
             {passwordError && (
               <div className="text-red-500 text-sm mt-1">{passwordError}</div>
             )}
@@ -159,7 +159,7 @@ const SignUp = () => {
               required
             />
           </div>
-          <div className="flex ml-8">
+          <div className="flex">
             {confirmPasswordError && (
               <div className="text-red-500 text-sm mt-1">
                 {confirmPasswordError}
