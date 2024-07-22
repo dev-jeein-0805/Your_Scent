@@ -129,7 +129,7 @@ const EditProduct = () => {
   }
 
   return (
-    <section className="w-full text-center">
+    <section className="w-350 mx-auto text-center">
       <h2 className="text-2xl font-bold my-4">판매 상품 수정/삭제</h2>
       <div className="flex justify-center">
         <div className="w-1/2 border-2 ml-10 relative">

@@ -80,8 +80,8 @@ const OrderHistory = () => {
   }
 
   return (
-    <div>
-      <h2>구매 내역</h2>
+    <div className="w-350 mx-auto">
+      <div className="text-3xl my-3">구매 내역</div>
       {orders.map((order) => (
         <div
           className="border border-solid border-black mt-2 p-2 mx-40"

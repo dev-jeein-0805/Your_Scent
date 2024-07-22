@@ -153,7 +153,7 @@ const NewProduct = () => {
   };
 
   return (
-    <section className="w-full text-center">
+    <section className="w-350 mx-auto text-center">
       <h2 className="text-2xl font-bold my-4">판매 상품 등록</h2>
       {success && <p className="my-2">✅{success}</p>}
       <div className="flex justify-center">
@@ -243,7 +243,10 @@ const NewProduct = () => {
               className="border-b-1 border-t-0 border-x-0 p-2 mb-6"
               required
             />
-            <button className="bg-brand mt-2" disabled={isUploading}>
+            <button
+              className="bg-blue-300 mt-2 py-4 rounded-lg font-bold text-xl"
+              disabled={isUploading}
+            >
               {isUploading ? "업로드 중..." : "제품 등록하기"}
             </button>
           </form>
