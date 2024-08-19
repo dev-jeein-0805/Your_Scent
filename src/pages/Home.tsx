@@ -4,6 +4,7 @@ import { getProductsByCategory } from "../api/getProductsByCategory";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
 import banner from "../utils/banner.png";
+import Skeleton from "react-loading-skeleton";
 
 const Home = () => {
   const { data, error, isLoading } = useQuery({
@@ -66,7 +67,41 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="mt-10 flex items-center justify-center">
+          <Skeleton height={200} width={350} />
+        </div>
+        {fixedCategories.map((category) => (
+          <div key={category}>
+            <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold flex justify-between items-center">
+              <Skeleton width={100} />
+              <Skeleton width={70} />
+            </h2>
+            <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <li
+                  key={index}
+                  className="rounded-lg shadow-md overflow-hidden"
+                >
+                  <Skeleton height={150} />
+                  <div className="mt-2 px-2 text-lg flex justify-between items-center">
+                    <Skeleton width={100} />
+                    <Skeleton width={50} />
+                  </div>
+                  <p className="mb-2 px-2 text-gray-600">
+                    <Skeleton width={80} />
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (error) return <div>Error: {error.message}</div>;
 
   const groupedProducts = data ? groupByCategory(data) : {};
@@ -76,7 +111,7 @@ const Home = () => {
       <div className="mt-10 flex items-center justify-center">
         <img className="w-350" src={banner} />
       </div>
-      <div className="w-350 mx-auto">
+      <div className="w-full max-w-6xl mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
           Object.keys(groupedProducts).map((category) => (
             <div key={category}>
@@ -89,7 +124,7 @@ const Home = () => {
                   더보기
                 </button>
               </h2>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                 {groupedProducts[category]
                   .slice(currentIndex, currentIndex + 4)
                   .map((product: Product) => (
@@ -101,7 +136,7 @@ const Home = () => {
                       {product.productImageUrls &&
                         product.productImageUrls.length > 0 && (
                           <img
-                            className="w-full"
+                            className="w-full h-10vh object-cover" // 높이를 고정하여 이미지 크기를 조정
                             src={product.productImageUrls[0]}
                             alt={product.productName}
                           />

@@ -97,27 +97,17 @@ const ProductDetail = () => {
 
   return (
     <>
-      <section className="w-350 mx-auto flex flex-col md:flex-row p-4 justify-center mt-10 mb-4">
+      <section className="w-full max-w-6xl mx-auto flex flex-col md:flex-row p-4 justify-center mt-10 mb-4">
         {product.productImageUrls && product.productImageUrls.length > 0 && (
-          <div className="w-full px-4 basis-4/12">
+          <div className="w-full md:w-4/12 px-4">
             <img
-              className="w-80"
+              className="w-full h-auto" // 이미지의 너비를 100%로 설정하고 비율 유지
               src={product.productImageUrls[0]}
               alt={product.productName}
             />
-            {/* <div className="grid grid-cols-3 gap-2 mt-4">
-              {product.productImageUrls.slice(1).map((url, index) => (
-                <img
-                  className="w-full"
-                  key={index}
-                  src={url}
-                  alt={`${product.productName} ${index + 1}`}
-                />
-              ))}
-            </div> */}
           </div>
         )}
-        <div className="w-full basis-5/12 flex flex-col p-4">
+        <div className="w-full md:w-5/12 flex flex-col p-4">
           <h1 className="text-3xl font-bold py-2">{product.productName}</h1>
           <p className="mt-2 text-gray-600">{product.productDescription}</p>
           <p className="text-2xl font-bold py-2 border-gray-400">
@@ -130,6 +120,7 @@ const ProductDetail = () => {
             <button
               onClick={() => setQuantity(quantity - 1)}
               disabled={quantity === 1}
+              className="mx-1"
             >
               -
             </button>
@@ -137,6 +128,7 @@ const ProductDetail = () => {
             <button
               onClick={() => setQuantity(quantity + 1)}
               disabled={quantity >= product.productStock} // 수량 버튼 비활성화 조건 추가
+              className="mx-1"
             >
               +
             </button>
@@ -156,17 +148,17 @@ const ProductDetail = () => {
           )}
         </div>
       </section>
-      <section className="p-4 mt-0 w-350 mx-auto">
+      <section className="p-4 mt-0 w-full max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold py-2">추천상품</h2>
-        <div className="flex flex-wrap">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {displayedProducts.map((recommendedProduct, index) => (
             <div
               key={index}
-              className="border w-full sm:w-1/2 lg:w-1/4 p-4 cursor-pointer"
+              className="border w-full p-4 cursor-pointer"
               onClick={() => handleProductClick(recommendedProduct)}
             >
               <img
-                className="w-full"
+                className="w-full h-auto" // 이미지의 너비를 100%로 설정하고 비율 유지
                 src={
                   recommendedProduct.productImageUrls &&
                   recommendedProduct.productImageUrls[0]
