@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useRef, useEffect, useState, useMemo } from "react";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { FadeLoader } from "react-spinners";
+import Skeleton from "react-loading-skeleton";
 
 type PageData = {
   products: Product[];
@@ -45,11 +46,6 @@ const Category = () => {
   const handleProductClick = (product: Product) => {
     navigate(`/products/${product.productId}`, { state: { product } });
   };
-
-  // const filteredProducts =
-  //   data?.pages.flatMap((page) =>
-  //     page.products.filter((product: Product) => product.category === category)
-  //   ) || [];
 
   const filteredProducts = useMemo(() => {
     const products =
@@ -97,33 +93,57 @@ const Category = () => {
     refetch();
   };
 
-  if (isLoading) return <FadeLoader />;
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-4">
+        <h2 className="ml-4 mt-5 mb-2 text-2xl font-semibold">
+          <Skeleton width={200} />
+        </h2>
+        <div className="flex flex-wrap justify-end mb-4">
+          <Skeleton height={40} width={150} />
+        </div>
+        <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <li key={index} className="rounded-lg shadow-md overflow-hidden">
+              <Skeleton height={150} />
+              <div className="mt-2 px-2 text-lg flex justify-between items-center">
+                <Skeleton width={100} />
+                <Skeleton width={50} />
+              </div>
+              <p className="mb-2 px-2 text-gray-600">
+                <Skeleton width={80} />
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="w-350 mx-auto">
-      <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold">{category}</h2>
-      <div className="flex justify-end mr-4 mb-4">
-        <button
-          onClick={() => handleOrderChange("createdAtDesc")}
-          className="mx-2"
+    <div className="w-full max-w-6xl mx-auto p-4">
+      <h2 className="ml-4 mt-5 mb-2 text-2xl font-semibold">{category}</h2>
+      <div className="flex flex-wrap justify-end mb-4">
+        <select
+          onChange={(e) =>
+            handleOrderChange(
+              e.target.value as
+                | "createdAtDesc"
+                | "createdAtAsc"
+                | "priceAsc"
+                | "priceDesc"
+            )
+          }
+          className="mx-2 mb-2 p-2 border rounded cursor-pointer"
         >
-          최신 등록 순
-        </button>
-        <button
-          onClick={() => handleOrderChange("createdAtAsc")}
-          className="mx-2"
-        >
-          오래된 등록 순
-        </button>
-        <button onClick={() => handleOrderChange("priceAsc")} className="mx-2">
-          낮은 가격 순
-        </button>
-        <button onClick={() => handleOrderChange("priceDesc")} className="mx-2">
-          높은 가격 순
-        </button>
+          <option value="createdAtDesc">최신 등록 순</option>
+          <option value="createdAtAsc">오래된 등록 순</option>
+          <option value="priceAsc">낮은 가격 순</option>
+          <option value="priceDesc">높은 가격 순</option>
+        </select>
       </div>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product: Product) => (
             <li
@@ -134,7 +154,7 @@ const Category = () => {
               {product.productImageUrls &&
                 product.productImageUrls.length > 0 && (
                   <img
-                    className="w-full"
+                    className="w-full h-10vh object-cover" // 이미지의 높이를 조정
                     src={product.productImageUrls[0]}
                     alt={product.productName}
                   />
