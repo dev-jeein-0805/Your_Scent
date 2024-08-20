@@ -114,7 +114,7 @@ const Home = () => {
   return (
     <>
       <div className="mt-10 flex items-center justify-center">
-        <img className="w-350" src={banner} />
+        <img className="w-350" src={banner} alt="banner" />
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
