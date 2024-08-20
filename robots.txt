@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /pages/AllProducts.tsx
+Disallow: /pages/EditProduct.tsx
+Disallow: /pages/EditProfile.tsx
+Disallow: /pages/MyPage.tsx
+Disallow: /pages/NewProduct.tsx
+Disallow: /pages/Order.tsx
+Disallow: /pages/OrderHistory.tsx
+Disallow: /pages/SalesHistory.tsx
+Allow: /pages/
+
+Sitemap: https://your-scent.vercel.app/sitemap.xml
