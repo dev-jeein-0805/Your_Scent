@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { getProductsByCategory } from "../api/getProductsByCategory";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
-import banner from "../utils/banner.png";
+import banner from "../utils/banner.webp";
 import Skeleton from "react-loading-skeleton";
 
 const Home = () => {
