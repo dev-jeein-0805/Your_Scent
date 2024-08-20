@@ -14,6 +14,7 @@ const Home = () => {
 
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   const handleProductClick = (product: Product) => {
     navigate(`/products/${product.productId}`, { state: { product } });
@@ -106,6 +107,10 @@ const Home = () => {
 
   const groupedProducts = data ? groupByCategory(data) : {};
 
+  const handleImageLoad = () => {
+    setImagesLoaded(true);
+  };
+
   return (
     <>
       <div className="mt-10 flex items-center justify-center">
@@ -136,17 +141,32 @@ const Home = () => {
                       {product.productImageUrls &&
                         product.productImageUrls.length > 0 && (
                           <img
-                            className="w-full h-10vh object-cover" // 높이를 고정하여 이미지 크기를 조정
+                            className={`w-full h-10vh object-cover ${imagesLoaded ? "" : "hidden"}`}
                             src={product.productImageUrls[0]}
                             alt={product.productName}
+                            onLoad={handleImageLoad}
                           />
                         )}
+                      {!imagesLoaded && <Skeleton height={150} />}
                       <div className="mt-2 px-2 text-lg flex justify-between items-center">
-                        <h3 className="truncate">{product.productName}</h3>
-                        <p>{`₩${product.productPrice.toLocaleString()}`}</p>
+                        {imagesLoaded ? (
+                          <>
+                            <h3 className="truncate">{product.productName}</h3>
+                            <p>{`₩${product.productPrice.toLocaleString()}`}</p>
+                          </>
+                        ) : (
+                          <>
+                            <Skeleton width={100} />
+                            <Skeleton width={50} />
+                          </>
+                        )}
                       </div>
                       <p className="mb-2 px-2 text-gray-600">
-                        {product.productCategory}
+                        {imagesLoaded ? (
+                          product.productCategory
+                        ) : (
+                          <Skeleton width={80} />
+                        )}
                       </p>
                     </li>
                   ))}
