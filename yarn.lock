@@ -15378,6 +15378,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-easy-swipe@npm:^0.0.23":
+  version: 0.0.23
+  resolution: "react-easy-swipe@npm:0.0.23"
+  dependencies:
+    prop-types: "npm:^15.5.8"
+  checksum: 10c0/69906088c6e8af7e8614a17899e9ec883f68accaa63eaccf0dab6f75f51c960e5340efa26e63bdf19e315d474c0d53b334ca3baf5e58868a13645c03826a3f1b
+  languageName: node
+  linkType: hard
+
 "react-error-overlay@npm:6.0.9":
   version: 6.0.9
   resolution: "react-error-overlay@npm:6.0.9"
@@ -15632,6 +15641,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/6d66f3bdb65e1ec79089f80314da97c9a005087a04ee034255a5de129a4c0d9fd0bf99fa7bf642781ac2dc745ca687aae3de082bd8afdd0d117bc953241e15ad
+  languageName: node
+  linkType: hard
+
+"react-swipeable@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "react-swipeable@npm:7.0.1"
+  peerDependencies:
+    react: ^16.8.3 || ^17 || ^18
+  checksum: 10c0/ebd34ac4cad0053db2a43a5113a1b1f2ecbe2badbf4b3aae14cf7292cf836991378637dc7b7da6cf5217215b92559b43dd43775ba3fea95e7e451dc76d029893
   languageName: node
   linkType: hard
 
@@ -19510,6 +19528,7 @@ __metadata:
     prettier: "npm:^3.3.2"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
+    react-easy-swipe: "npm:^0.0.23"
     react-error-overlay: "npm:6.0.9"
     react-hook-form: "npm:^7.52.0"
     react-icons: "npm:^5.2.1"
@@ -19519,6 +19538,7 @@ __metadata:
     react-router-dom: "npm:^6.23.1"
     react-scripts: "npm:4.0.3"
     react-spinners: "npm:^0.14.1"
+    react-swipeable: "npm:^7.0.1"
     shadcn-ui: "npm:^0.8.0"
     tailwind-merge: "npm:^2.4.0"
     tailwindcss: "npm:^3.4.4"
