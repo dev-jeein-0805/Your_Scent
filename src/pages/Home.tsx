@@ -114,7 +114,7 @@ const Home = () => {
   return (
     <>
       <div className="mt-10 flex items-center justify-center">
-        <img className="w-350" src={banner} alt="banner" />
+        <img className="w-330 mx-auto" src={banner} alt="banner" />
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
@@ -123,7 +123,7 @@ const Home = () => {
               <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold flex justify-between items-center">
                 {category}
                 <button
-                  className="text-blue-500"
+                  className="text-blue-500 mr-6"
                   onClick={() => handleViewMoreClick(category)}
                 >
                   더보기
