@@ -20,7 +20,7 @@ import {
 import { getStorage } from "firebase/storage";
 import { Dispatch } from "react";
 import { AuthAction } from "../contexts/AuthContext";
-import { UserInfo } from "../contexts/AuthContext";
+import { UserInfo } from "../types/UserInfo";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,

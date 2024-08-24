@@ -8,12 +8,12 @@ import {
 } from "firebase/auth";
 import { useState, useEffect, useContext } from "react";
 import { useAuthDispatch, useAuthState } from "../contexts/AuthContext";
-import { UserInfo } from "../contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../api/firebase";
 import ShopperBag from "../utils/ShopperBag";
 import Drawer from "./Drawer";
 import { CartContext } from "../contexts/CartContext";
+import { UserInfo } from "../types/UserInfo";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);

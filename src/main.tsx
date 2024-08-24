@@ -11,7 +11,7 @@ import ProductDetail from "./pages/ProductDetail.tsx";
 import Cart from "./components/Cart.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
-import { AuthContextProvider } from "./contexts/AuthContext.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
 import Category from "./pages/Category.tsx";
 import Order from "./pages/Order.tsx";
 import MyPage from "./pages/MyPage.tsx";
@@ -103,11 +103,11 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
-        <AuthContextProvider>
+        <AuthProvider>
           <CartProvider>
             <RouterProvider router={router} />
           </CartProvider>
-        </AuthContextProvider>
+        </AuthProvider>
       </RecoilRoot>
     </QueryClientProvider>
   </React.StrictMode>

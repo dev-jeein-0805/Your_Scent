@@ -1,47 +1,14 @@
-import { useRecoilState } from "recoil";
-import { UserInfo } from "../../types/UserInfo";
-import { AuthState, authStateAtom } from "./authAtoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { authStateAtom, AuthStateType } from "./authAtom";
 
-const initialState: AuthState = {
-  email: "",
-  password: "",
-  user: null,
-  isSeller: false,
+// Auth 상태를 가져오는 커스텀 훅
+export const useAuthState = (): AuthStateType => {
+  const authState = useRecoilState(authStateAtom)[0];
+  return authState;
 };
 
-export const useAuth = () => {
-  const [authState, setAuthState] = useRecoilState(authStateAtom);
-
-  const setUser = (user: UserInfo | null) => {
-    setAuthState((prev) => ({
-      ...prev,
-      user,
-      isSeller: user?.isSeller || false,
-    }));
-  };
-
-  const logout = () => {
-    setAuthState(initialState);
-  };
-
-  const setEmail = (email: string) => {
-    setAuthState((prev) => ({ ...prev, email }));
-  };
-
-  const setPassword = (password: string) => {
-    setAuthState((prev) => ({ ...prev, password }));
-  };
-
-  const setIsSeller = (isSeller: boolean) => {
-    setAuthState((prev) => ({ ...prev, isSeller }));
-  };
-
-  return {
-    authState,
-    setUser,
-    logout,
-    setEmail,
-    setPassword,
-    setIsSeller,
-  };
+// Auth 상태를 업데이트하는 커스텀 훅
+export const useSetAuthState = () => {
+  const setAuthState = useSetRecoilState(authStateAtom);
+  return setAuthState;
 };
