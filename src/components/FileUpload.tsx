@@ -7,12 +7,40 @@ interface FileUploadProps {
   onFileSelect: (files: File[] | null) => void;
 }
 
+const convertToWebP = async (file: File): Promise<File> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(
+              new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), {
+                type: "image/webp",
+              })
+            );
+          }
+        }, "image/webp");
+      };
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export const uploadFiles = async (files: File[]): Promise<string[]> => {
   const imageUrls: string[] = [];
 
   for (const file of files) {
+    const webpFile = await convertToWebP(file); // WebP로 변환
     const imageRef = ref(storage, `${auth.currentUser?.uid}/${file.name}`);
-    await uploadBytes(imageRef, file);
+    await uploadBytes(imageRef, webpFile);
 
     // 파일 URL 가져오기
     const downloadURL = await getDownloadURL(imageRef);
@@ -34,6 +62,7 @@ const FileUpload = ({ onFileSelect }: FileUploadProps) => {
       onFileSelect(filesArray);
     } else {
       onFileSelect(null);
+      console.log(selectedFiles);
     }
   };
 

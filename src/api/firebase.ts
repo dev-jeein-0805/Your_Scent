@@ -40,13 +40,13 @@ export const storage = getStorage(app);
 
 // 회원가입
 export const join = async (
-  username: string,
+  nickname: string,
   email: string,
   password: string,
   isSeller: boolean,
   navigate: Function
 ) => {
-  if (!email || !password || !username) {
+  if (!email || !password || !nickname) {
     alert("이름과 이메일, 비밀번호를 필수로 입력해 주세요.");
     return;
   }
@@ -63,10 +63,13 @@ export const join = async (
 
     // Firestore에 사용자 데이터 저장
     await setDoc(doc(db, "users", user.uid), {
+      userId: user.uid,
       email: user.email,
+      password,
       isSeller,
-      username,
+      nickname,
       createdAt: Timestamp.now().toDate(),
+      updatedAt: Timestamp.now().toDate(),
     });
     console.log("Firestore에 사용자 정보 저장 성공"); // 디버깅 로그 추가
 
@@ -109,29 +112,35 @@ export const signIn = async (
 ) => {
   if (!email || !password) {
     alert("이메일 또는 비밀번호를 모두 입력해 주세요.");
-    return;
+    return {
+      user: null,
+      isSeller: false,
+    };
   }
 
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
 
     // 유저정보 가져오기
-
-    // 'users'라는 db에 있는 user.uid에 해당되는 문서를 찾고
     const docRef = doc(db, "users", user.uid);
-    // 찾은 문서를 가지고 온다.
     const docSnap = await getDoc(docRef);
-    // 문서가 존재하는지 확인
+    let isSeller = false;
     if (docSnap.exists()) {
-      dispatch({ type: "SET_USER", payload: docSnap.data() as UserInfo }); // 타입 캐스팅
+      isSeller = docSnap.data().isSeller;
+      dispatch({ type: "SET_USER", payload: docSnap.data() as UserInfo });
     } else {
       console.log("No such document!");
     }
 
     // 메인페이지 이동
     navigate("/");
+    return { user, isSeller };
   } catch (error) {
-    alert("이메일, 비밀번호를 다시 확인해 주세요.");
+    return {
+      user: null,
+      isSeller: false,
+      errorMessage: "이메일과 비밀번호를 다시 확인해 주세요.",
+    };
   }
 };
 
@@ -146,6 +155,7 @@ export const logOut = async (
     dispatch({ type: "SET_EMAIL", payload: "" }); // 이메일 상태 초기화
     dispatch({ type: "SET_PASSWORD", payload: "" }); // 비밀번호 상태 초기화
     localStorage.removeItem("user"); // 로컬 스토리지에서 사용자 정보 제거
+    localStorage.removeItem("cart");
     navigate("/");
     alert("로그아웃 되었습니다. 메인 페이지로 이동합니다.");
   } catch (error) {

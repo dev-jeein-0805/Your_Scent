@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getProductsByCategory } from "../api/getProductsByCategory";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
-import banner from "../utils/banner.png";
+import banner from "../utils/banner.webp";
+import Skeleton from "react-loading-skeleton";
 
 const Home = () => {
   const { data, error, isLoading } = useQuery({
@@ -13,9 +14,10 @@ const Home = () => {
 
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/mypage/products/edit/${product.id}`, { state: { product } });
+    navigate(`/products/${product.productId}`, { state: { product } });
   };
 
   const handleViewMoreClick = (category: string) => {
@@ -37,8 +39,8 @@ const Home = () => {
     });
 
     products.forEach((product) => {
-      if (grouped[product.category]) {
-        grouped[product.category].push(product);
+      if (grouped[product.productCategory]) {
+        grouped[product.productCategory].push(product);
       }
     });
 
@@ -53,8 +55,8 @@ const Home = () => {
           const maxIndex = Math.max(
             ...fixedCategories.map(
               (category) =>
-                data.filter((product) => product.category === category).length -
-                4
+                data.filter((product) => product.productCategory === category)
+                  .length - 4
             )
           );
           return prevIndex + 1 > maxIndex ? 0 : prevIndex + 1;
@@ -66,51 +68,105 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="mt-10 flex items-center justify-center">
+          <Skeleton height={200} width={350} />
+        </div>
+        {fixedCategories.map((category) => (
+          <div key={category}>
+            <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold flex justify-between items-center">
+              <Skeleton width={100} />
+              <Skeleton width={70} />
+            </h2>
+            <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <li
+                  key={index}
+                  className="rounded-lg shadow-md overflow-hidden"
+                >
+                  <Skeleton height={150} />
+                  <div className="mt-2 px-2 text-lg flex justify-between items-center">
+                    <Skeleton width={100} />
+                    <Skeleton width={50} />
+                  </div>
+                  <p className="mb-2 px-2 text-gray-600">
+                    <Skeleton width={80} />
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (error) return <div>Error: {error.message}</div>;
 
   const groupedProducts = data ? groupByCategory(data) : {};
 
+  const handleImageLoad = () => {
+    setImagesLoaded(true);
+  };
+
   return (
     <>
-      <div className="mt-10">
-        <img src={banner} />
+      <div className="mt-10 flex items-center justify-center">
+        <img className="w-330 mx-auto" src={banner} alt="banner" />
       </div>
-      <div>
+      <div className="w-full max-w-6xl mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
           Object.keys(groupedProducts).map((category) => (
             <div key={category}>
               <h2 className="ml-4 mt-5 mb-2 text-xl font-semibold flex justify-between items-center">
                 {category}
                 <button
-                  className="text-blue-500"
+                  className="text-blue-500 mr-6"
                   onClick={() => handleViewMoreClick(category)}
                 >
                   더보기
                 </button>
               </h2>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+              <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                 {groupedProducts[category]
                   .slice(currentIndex, currentIndex + 4)
                   .map((product: Product) => (
                     <li
                       className="rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform duration-500 ease-in-out transform hover:scale-105"
-                      key={product.id}
+                      key={product.productId}
                       onClick={() => handleProductClick(product)}
                     >
-                      {product.imageUrls && product.imageUrls.length > 0 && (
-                        <img
-                          className="w-full"
-                          src={product.imageUrls[0]}
-                          alt={product.title}
-                        />
-                      )}
+                      {product.productImageUrls &&
+                        product.productImageUrls.length > 0 && (
+                          <img
+                            className={`w-full h-10vh object-cover ${imagesLoaded ? "" : "hidden"}`}
+                            src={product.productImageUrls[0]}
+                            alt={product.productName}
+                            onLoad={handleImageLoad}
+                          />
+                        )}
+                      {!imagesLoaded && <Skeleton height={150} />}
                       <div className="mt-2 px-2 text-lg flex justify-between items-center">
-                        <h3 className="truncate">{product.title}</h3>
-                        <p>{`₩${product.price.toLocaleString()}`}</p>
+                        {imagesLoaded ? (
+                          <>
+                            <h3 className="truncate">{product.productName}</h3>
+                            <p>{`₩${product.productPrice.toLocaleString()}`}</p>
+                          </>
+                        ) : (
+                          <>
+                            <Skeleton width={100} />
+                            <Skeleton width={50} />
+                          </>
+                        )}
                       </div>
                       <p className="mb-2 px-2 text-gray-600">
-                        {product.category}
+                        {imagesLoaded ? (
+                          product.productCategory
+                        ) : (
+                          <Skeleton width={80} />
+                        )}
                       </p>
                     </li>
                   ))}

@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BsFillPencilFill } from "react-icons/bs";
 import { RiFlowerFill } from "react-icons/ri";
 import { auth, logOut } from "../api/firebase";
 import {
@@ -7,21 +6,24 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
 } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useAuthDispatch, useAuthState } from "../contexts/AuthContext";
 import { UserInfo } from "../contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../api/firebase";
+import ShopperBag from "../utils/ShopperBag";
+import Drawer from "./Drawer";
+import { CartContext } from "../contexts/CartContext";
 
 export default function Navbar() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
   const [isSeller, setIsSeller] = useState<boolean>(false);
+  const [isDrawerOpen, setDrawerOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
   const authState = useAuthState();
-
-  // console.log("user:", user);
-  // console.log("isSeller:", isSeller);
+  const cartContext = useContext(CartContext);
 
   // Firebase 인증 상태 변화를 감지하여 user 상태를 업데이트
   useEffect(() => {
@@ -35,16 +37,19 @@ export default function Navbar() {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setIsSeller(userData.isSeller);
+          setNickname(userData.nickname);
 
           const user: UserInfo = {
             email: firebaseUser.email || "",
             isSeller: userData.isSeller,
+            nickname: userData.nickname,
           };
           dispatch({ type: "SET_USER", payload: user }); // authState.user를 업데이트
         }
       } else {
         setUser(null);
         setIsSeller(false);
+        setNickname(null);
         dispatch({ type: "LOGOUT" }); // authState.user를 null로 업데이트
       }
     });
@@ -52,30 +57,43 @@ export default function Navbar() {
     return () => unsubscribe();
   }, [dispatch]);
 
-  // console.log(authState.user); // 로그인 상태 확인
-
   const handleLogout = async () => {
     try {
       await logOut(dispatch, navigate);
     } catch (error) {
-      console.error("Logout error: ", error);
+      console.error("Logout error: ", error, user, isSeller);
     }
   };
 
+  if (!cartContext) {
+    throw new Error("CartContext를 찾을 수 없습니다.");
+  }
+
+  const { cart } = cartContext;
+
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
-    <header className="flex justify-between border-b border-gray-300 p-2">
-      <Link to="/" className="flex items-center text-1xl text-brand">
+    <header className="w-full max-w-6xl flex justify-between items-center border-b border-gray-300 mx-auto p-4 bg-white z-50">
+      <Link to="/" className="flex items-center text-md text-brand">
         <RiFlowerFill />
-        <h1>Your Scent</h1>
+        <h1 className="ml-2">Your Scent</h1>
       </Link>
       <nav className="flex items-center gap-4 font-semibold">
         {authState.user ? (
           <>
-            <Link to="products">Products</Link>
-            <Link to="products/new" className="text-2xl">
-              <BsFillPencilFill />
-            </Link>
-            <Link to="cart">Cart</Link>
+            <div className="hidden md:block">{nickname} 님, 안녕하세요!</div>
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="relative text-2xl bg-transparent"
+            >
+              <ShopperBag />
+              {totalQuantity > 0 && (
+                <div className="absolute top-0 right-0 text-white rounded-full bg-red-500 px-2 py-1 text-xs">
+                  {totalQuantity}
+                </div>
+              )}
+            </button>
             <Link to="/mypage">My Page</Link>
             <button onClick={handleLogout}>Logout</button>
           </>
@@ -86,6 +104,7 @@ export default function Navbar() {
           </>
         )}
       </nav>
+      <Drawer isOpen={isDrawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 }
