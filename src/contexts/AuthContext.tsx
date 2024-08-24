@@ -6,13 +6,7 @@ import {
   useEffect,
 } from "react";
 import { CartContext, CartProvider } from "./CartContext";
-
-export interface UserInfo {
-  email: string;
-  isSeller: boolean;
-  nickname?: string;
-  // password: string;
-}
+import { UserInfo } from "../types/UserInfo";
 
 // 상태 타입 정의
 interface AuthState {

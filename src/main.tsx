@@ -22,6 +22,7 @@ import EditProduct from "./pages/EditProduct.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "./contexts/CartContext.tsx";
 import SalesHistory from "./pages/SalesHistory.tsx";
+import { RecoilRoot } from "recoil";
 
 const router = createBrowserRouter([
   {
@@ -101,11 +102,13 @@ const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <CartProvider>
-          <RouterProvider router={router} />
-        </CartProvider>
-      </AuthContextProvider>
+      <RecoilRoot>
+        <AuthContextProvider>
+          <CartProvider>
+            <RouterProvider router={router} />
+          </CartProvider>
+        </AuthContextProvider>
+      </RecoilRoot>
     </QueryClientProvider>
   </React.StrictMode>
 );
