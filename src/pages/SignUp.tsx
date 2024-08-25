@@ -1,43 +1,61 @@
 import { useState } from "react";
 import { join } from "../api/firebase";
 import { useNavigate } from "react-router-dom";
-import { useAuthDispatch } from "../contexts/AuthContext";
+import { useRecoilState } from "recoil";
+import { authStateAtom } from "../recoil/auth/authAtom";
 
 const SignUp = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [authState, setAuthState] = useRecoilState(authStateAtom);
+  const { email, password, isSeller } = authState;
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
-  const [isSeller, setIsSeller] = useState<boolean>(false);
   const [nicknameFocused, setNicknameFocused] = useState<boolean>(false);
   const [emailFocused, setEmailFocused] = useState<boolean>(false);
   const [passwordFocused, setPasswordFocused] = useState<boolean>(false);
   const [confirmPasswordFocused, setConfirmPasswordFocused] =
     useState<boolean>(false);
+  const [nicknameError, setNicknameError] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
-  const dispatch = useAuthDispatch();
   const navigate = useNavigate();
 
-  const onChange = (event: any) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value },
     } = event;
     if (name === "nickname") {
       setNickname(value);
+      validateNickname(value);
     }
     if (name === "email") {
-      setEmail(value);
+      setAuthState((prevState) => ({
+        ...prevState,
+        email: event.target.value,
+      }));
       validateEmail(value);
     }
     if (name === "password") {
-      setPassword(value);
+      setAuthState((prevState) => ({
+        ...prevState,
+        password: event.target.value,
+      }));
       validatePassword(value);
     }
     if (name === "confirmPassword") {
       setConfirmPassword(value);
       validateConfirmPassword(value);
+    }
+  };
+
+  const validateNickname = (nickname: string) => {
+    const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,15}$/;
+    if (!nicknameRegex.test(nickname)) {
+      setNicknameError(
+        "닉네임은 2~15자리의 한글, 영문 대소문자, 숫자만 사용할 수 있습니다."
+      );
+    } else {
+      setNicknameError("");
     }
   };
 
@@ -70,27 +88,31 @@ const SignUp = () => {
     }
   };
 
-  const handleCheckboxChange = (event: any) => {
-    setIsSeller(event.target.checked);
-    dispatch({ type: "SET_IS_SELLER", payload: event.target.checked });
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = event.target.checked;
+
+    setAuthState((prevState) => ({
+      ...prevState,
+      isSeller: isChecked,
+    }));
   };
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
-    if (emailError || passwordError || confirmPasswordError) {
+    if (nicknameError || emailError || passwordError || confirmPasswordError) {
       return;
     }
     await join(nickname, email, password, isSeller, navigate);
   };
 
   return (
-    <div className="flex items-center justify-center max-h-screen">
+    <div className="flex items-center justify-center max-h-screen p-4">
       <div className="w-full max-w-md rounded-xl bg-loginBgColor p-8 md:p-12 mt-24">
         <div className="text-3xl text-center mt-8">회원가입</div>
         <form onSubmit={onSubmit}>
           <div className="mt-2 flex items-center justify-center">
             <input
-              className={`w-100 h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
+              className={`w-full h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
                 nicknameFocused ? "border-blue-500" : "border-white"
               } bg-loginBgColor focus:outline-none`}
               type="text"
@@ -103,9 +125,15 @@ const SignUp = () => {
               required
             />
           </div>
+          <div className="flex">
+            {nicknameError && (
+              <div className="text-red-500 text-sm mt-1">{nicknameError}</div>
+            )}
+          </div>
+
           <div className="flex items-center justify-center">
             <input
-              className={`w-100 h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
+              className={`w-full h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
                 emailFocused ? "border-blue-500" : "border-white"
               } bg-loginBgColor focus:outline-none`}
               type="email"
@@ -126,7 +154,7 @@ const SignUp = () => {
 
           <div className="flex items-center justify-center">
             <input
-              className={`w-100 h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
+              className={`w-full h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
                 passwordFocused ? "border-blue-500" : "border-white"
               } bg-loginBgColor focus:outline-none`}
               type="password"
@@ -146,7 +174,7 @@ const SignUp = () => {
           </div>
           <div className="flex items-center justify-center">
             <input
-              className={`w-100 h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
+              className={`w-full h-14 pl-2 pb-2 border-l-0 border-r-0 border-t-0 border-b-2 ${
                 confirmPasswordFocused ? "border-blue-500" : "border-white"
               } bg-loginBgColor focus:outline-none`}
               type="password"
@@ -183,7 +211,7 @@ const SignUp = () => {
             </label>
           </div>
           <div className="flex items-center justify-center mt-6 mb-4">
-            <button className="w-100 h-14 hover:outline-none" type="submit">
+            <button className="w-full h-14 hover:outline-none" type="submit">
               회원가입
             </button>
           </div>
@@ -194,6 +222,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
-// 회원가입 전체 박스 크기조절 안됨
-// button 에 마우스 hover 될 때 outline-none 적용이 안됨

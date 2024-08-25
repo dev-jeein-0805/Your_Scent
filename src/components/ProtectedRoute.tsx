@@ -1,7 +1,7 @@
 // 로그인 여부와 사용자 유형(판매자/구매자)에 따라 접근을 제어하는 컴포넌트
 import { Navigate } from "react-router-dom";
-import { useAuthState } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
+import { useAuthState } from "../recoil/auth/useAuth";
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   console.log(isLoading);
-  //  AuthContext 초기화 관여
+
   useEffect(() => {
     if (user !== null) {
       setIsLoading(false);
@@ -22,16 +22,9 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
 
   // 로그인 상태 확인
   const isAuthenticated = user !== null;
-  // console.log("isAuthenticated : ", isAuthenticated);
 
   // 사용자 역할 지정
   const userRole = isSeller ? "seller" : "consumer";
-  // console.log("userRole : ", userRole);
-
-  // if (isLoading) {
-  //   return <div>Loading...</div>; // 로딩 중에는 로딩 표시
-  // }
-  // console.log(isLoading);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
