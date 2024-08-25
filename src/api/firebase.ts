@@ -15,9 +15,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-
 import { UserInfo } from "../types/UserInfo";
-import { useSetAuthState } from "../recoil/auth/useAuth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
@@ -30,10 +28,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app); // Firestore 초기화 코드
-// const USER_COLLECTION = collection(db, "users");
 export const storage = getStorage(app);
-
-// console.log("app", app);
 
 // 회원가입
 export const join = async (
@@ -104,7 +99,8 @@ export const join = async (
 export const signIn = async (
   email: string,
   password: string,
-  navigate: Function
+  navigate: Function,
+  setAuthState: Function
 ) => {
   if (!email || !password) {
     alert("이메일 또는 비밀번호를 모두 입력해 주세요.");
@@ -126,20 +122,21 @@ export const signIn = async (
       const userInfo = docSnap.data() as UserInfo;
 
       // Recoil 상태 업데이트
-      const setAuthState = useSetAuthState();
-      setAuthState((prevState) => ({
+      setAuthState((prevState: any) => ({
         ...prevState,
         user: userInfo,
         isSeller,
       }));
+
+      // 메인페이지 이동
+      navigate("/");
     } else {
       console.log("No such document!");
     }
 
-    // 메인페이지 이동
-    navigate("/");
     return { user, isSeller };
   } catch (error) {
+    console.error("로그인 에러:", error);
     return {
       user: null,
       isSeller: false,
@@ -149,13 +146,12 @@ export const signIn = async (
 };
 
 // 로그아웃
-export const logOut = async (navigate: Function) => {
+export const logOut = async (navigate: Function, setAuthState: Function) => {
   try {
     await signOut(auth);
 
     // Recoil 상태 초기화
-    const setAuthState = useSetAuthState();
-    setAuthState((prevState) => ({
+    setAuthState((prevState: any) => ({
       ...prevState,
       user: null,
       isSeller: false,

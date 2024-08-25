@@ -54,7 +54,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await logOut(navigate);
+      await logOut(navigate, setAuthState);
     } catch (error) {
       console.error("Logout error: ", error);
     }
@@ -80,7 +80,7 @@ export default function Navbar() {
             >
               <ShopperBag />
               {totalQuantity > 0 && (
-                <div className="absolute top-0 right-0 text-white rounded-full bg-red-500 px-2 py-1 text-xs">
+                <div className="absolute -top-3 -right-3 text-white rounded-full bg-red-500 px-2 py-1 text-xs">
                   {totalQuantity}
                 </div>
               )}
