@@ -71,7 +71,7 @@ const Login = () => {
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
                 onChange={onChange}
-                placeholder="비밀번호 (영문+숫자+특수문자 조합 8~16자리)"
+                placeholder="비밀번호(영문+숫자+특수문자 조합 8~16자)"
                 required
               />
             </div>
