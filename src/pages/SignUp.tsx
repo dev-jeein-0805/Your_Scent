@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { join } from "../api/firebase";
 import { useNavigate } from "react-router-dom";
-import { useAuthDispatch } from "../contexts/AuthContext";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { authStateAtom } from "../recoil/auth/authAtom";
 
 const SignUp = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [authState, setAuthState] = useRecoilState(authStateAtom);
+  const { email, password, isSeller } = authState;
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
-  const [isSeller, setIsSeller] = useState<boolean>(false);
   const [nicknameFocused, setNicknameFocused] = useState<boolean>(false);
   const [emailFocused, setEmailFocused] = useState<boolean>(false);
   const [passwordFocused, setPasswordFocused] = useState<boolean>(false);
@@ -17,10 +17,9 @@ const SignUp = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
-  const dispatch = useAuthDispatch();
   const navigate = useNavigate();
 
-  const onChange = (event: any) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value },
     } = event;
@@ -28,11 +27,17 @@ const SignUp = () => {
       setNickname(value);
     }
     if (name === "email") {
-      setEmail(value);
+      setAuthState((prevState) => ({
+        ...prevState,
+        email: event.target.value,
+      }));
       validateEmail(value);
     }
     if (name === "password") {
-      setPassword(value);
+      setAuthState((prevState) => ({
+        ...prevState,
+        password: event.target.value,
+      }));
       validatePassword(value);
     }
     if (name === "confirmPassword") {
@@ -70,9 +75,14 @@ const SignUp = () => {
     }
   };
 
-  const handleCheckboxChange = (event: any) => {
-    setIsSeller(event.target.checked);
-    dispatch({ type: "SET_IS_SELLER", payload: event.target.checked });
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const setAuthState = useSetRecoilState(authStateAtom);
+    const isChecked = event.target.checked;
+
+    setAuthState((prevState) => ({
+      ...prevState,
+      isSeller: isChecked,
+    }));
   };
 
   const onSubmit = async (event: any) => {
@@ -194,6 +204,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
-// 회원가입 전체 박스 크기조절 안됨
-// button 에 마우스 hover 될 때 outline-none 적용이 안됨

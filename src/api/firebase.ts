@@ -9,18 +9,15 @@ import {
 import { FirebaseError } from "firebase/app";
 import {
   getFirestore,
-  // collection,
   doc,
   setDoc,
   getDoc,
   Timestamp,
-  // collection,
-  // getDocs,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { Dispatch } from "react";
-import { AuthAction } from "../contexts/AuthContext";
+
 import { UserInfo } from "../types/UserInfo";
+import { useSetAuthState } from "../recoil/auth/useAuth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
@@ -107,7 +104,6 @@ export const join = async (
 export const signIn = async (
   email: string,
   password: string,
-  dispatch: Dispatch<AuthAction>,
   navigate: Function
 ) => {
   if (!email || !password) {
@@ -127,7 +123,15 @@ export const signIn = async (
     let isSeller = false;
     if (docSnap.exists()) {
       isSeller = docSnap.data().isSeller;
-      dispatch({ type: "SET_USER", payload: docSnap.data() as UserInfo });
+      const userInfo = docSnap.data() as UserInfo;
+
+      // Recoil 상태 업데이트
+      const setAuthState = useSetAuthState();
+      setAuthState((prevState) => ({
+        ...prevState,
+        user: userInfo,
+        isSeller,
+      }));
     } else {
       console.log("No such document!");
     }
@@ -145,16 +149,20 @@ export const signIn = async (
 };
 
 // 로그아웃
-export const logOut = async (
-  dispatch: Dispatch<AuthAction>,
-  navigate: Function
-) => {
+export const logOut = async (navigate: Function) => {
   try {
     await signOut(auth);
-    dispatch({ type: "SET_USER", payload: null });
-    dispatch({ type: "SET_EMAIL", payload: "" }); // 이메일 상태 초기화
-    dispatch({ type: "SET_PASSWORD", payload: "" }); // 비밀번호 상태 초기화
-    localStorage.removeItem("user"); // 로컬 스토리지에서 사용자 정보 제거
+
+    // Recoil 상태 초기화
+    const setAuthState = useSetAuthState();
+    setAuthState((prevState) => ({
+      ...prevState,
+      user: null,
+      isSeller: false,
+    })); // 사용자 정보 초기화
+
+    // 로컬 스토리지에서 사용자 정보 제거
+    localStorage.removeItem("user");
     localStorage.removeItem("cart");
     navigate("/");
     alert("로그아웃 되었습니다. 메인 페이지로 이동합니다.");

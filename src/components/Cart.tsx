@@ -1,28 +1,21 @@
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../contexts/CartContext";
+import { useEffect, useState } from "react";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import cartAtom from "../recoil/cart/cartAtom";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const cartContext = useContext(CartContext);
-
-  if (!cartContext) {
-    return <div>장바구니가 비어 있습니다.</div>;
-  }
-
-  const { cart, dispatch } = cartContext;
+  const [cart, setCart] = useRecoilState(cartAtom);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
-  // const [finalAmount, setFinalAmount] = useState(0);
 
   useEffect(() => {
     setTotalAmount(calculateSelectedItemsTotal());
     const shippingCost = totalAmount >= 50000 ? 0 : 3000;
     setShippingCost(shippingCost);
-    // setFinalAmount(totalAmount + shippingCost);
   }, [selectedItems, cart, totalAmount]);
 
   const calculateSelectedItemsTotal = () => {
@@ -36,18 +29,27 @@ const Cart = () => {
   };
 
   const increaseQuantity = (id: string) => {
-    const item = cart.find((i) => i.id === id);
-    if (item && item.quantity < item.productStock) {
-      dispatch({ type: "INCREASE_QUANTITY", payload: { id } });
-    }
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === id && item.quantity < item.productStock
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
   };
 
   const decreaseQuantity = (id: string) => {
-    dispatch({ type: "DECREASE_QUANTITY", payload: { id } });
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
   };
 
   const handleRemove = (id: string) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: { id } });
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
     setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
   };
 
@@ -74,7 +76,6 @@ const Cart = () => {
   };
 
   const handleMoveToOrder = () => {
-    // navigate("/order");
     const selectedItemsDetails = cart.filter((item) =>
       selectedItems.includes(item.id)
     );

@@ -1,11 +1,13 @@
 import { signIn } from "../api/firebase";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthState, useAuthDispatch } from "../contexts/AuthContext";
 import { useState } from "react";
+import { useAuthState, useSetAuthState } from "../recoil/auth/useAuth";
+import { useSetRecoilState } from "recoil";
+import { authStateAtom } from "../recoil/auth/authAtom";
 
 const Login = () => {
   const { email, password } = useAuthState();
-  const dispatch = useAuthDispatch();
+  const setAuthState = useSetRecoilState(authStateAtom);
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [emailFocused, setEmailFocused] = useState<boolean>(false);
@@ -13,24 +15,18 @@ const Login = () => {
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    if (name === "email") {
-      dispatch({ type: "SET_EMAIL", payload: value });
-    } else if (name === "password") {
-      dispatch({ type: "SET_PASSWORD", payload: value });
-    }
+    setAuthState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const { user, isSeller, errorMessage } = await signIn(
-        email,
-        password,
-        dispatch,
-        navigate
-      );
+      const { user, errorMessage } = await signIn(email, password, navigate);
       if (user) {
-        dispatch({ type: "SET_USER", payload: { email, isSeller } });
+        useSetAuthState();
         alert("로그인 성공! 메인페이지로 이동합니다.");
         window.location.reload();
       } else if (errorMessage) {

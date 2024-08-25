@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { CartContext, CartContextType } from "../contexts/CartContext";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../api/firebase";
 import {
   collection,
@@ -12,6 +11,7 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import { useLocation, useNavigate } from "react-router-dom";
 import OrderConfirmModal from "../components/OrderConfirmModal";
+import { useCart } from "../recoil/cart/CartProvider";
 
 // window 객체에 IMP를 추가
 declare global {
@@ -39,6 +39,7 @@ interface CartItem {
 
 const Order = () => {
   const [userId, setUserId] = useState<string | null>(null);
+  const { cart, orderName, clearCart } = useCart(); // Recoil 훅
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedItems, totalPaymentAmount } = location.state || {
@@ -55,13 +56,9 @@ const Order = () => {
     });
   }, []);
 
-  const cartContext = useContext<CartContextType | undefined>(CartContext);
-
-  if (!cartContext) {
+  if (cart.length === 0) {
     return <div>장바구니가 비어 있습니다.</div>;
   }
-
-  const { orderName, clearCart } = cartContext;
 
   const [buyerInfo, setBuyerInfo] = useState({
     name: "",

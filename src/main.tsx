@@ -11,7 +11,6 @@ import ProductDetail from "./pages/ProductDetail.tsx";
 import Cart from "./components/Cart.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
-import { AuthProvider } from "./contexts/AuthContext.tsx";
 import Category from "./pages/Category.tsx";
 import Order from "./pages/Order.tsx";
 import MyPage from "./pages/MyPage.tsx";
@@ -20,9 +19,10 @@ import OrderHistory from "./pages/OrderHistory.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import EditProduct from "./pages/EditProduct.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CartProvider } from "./contexts/CartContext.tsx";
 import SalesHistory from "./pages/SalesHistory.tsx";
 import { RecoilRoot } from "recoil";
+import { AuthProvider } from "./recoil/auth/AuthProvider.tsx";
+import { CartProvider } from "./recoil/cart/CartProvider.tsx";
 
 const router = createBrowserRouter([
   {
