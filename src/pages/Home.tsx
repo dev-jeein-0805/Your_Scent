@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { getProductsByCategory } from "../api/getProductsByCategory";
 import { Product } from "../types/Product";
 import { useNavigate } from "react-router-dom";
-import banner from "../utils/banner.webp";
 import Skeleton from "react-loading-skeleton";
+import SwipeBanner from "../components/SwipeBanner";
 
 const Home = () => {
   const { data, error, isLoading } = useQuery({
@@ -114,7 +114,8 @@ const Home = () => {
   return (
     <>
       <div className="mt-10 flex items-center justify-center">
-        <img className="w-330 mx-auto" src={banner} alt="banner" />
+        {/* <img className="w-330 mx-auto" src={banner} alt="banner" /> */}
+        <SwipeBanner />
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {Object.keys(groupedProducts).length > 0 ? (
