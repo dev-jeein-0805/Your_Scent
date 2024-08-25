@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useAuthState } from "../contexts/AuthContext";
+import { useAuthState } from "../recoil/auth/useAuth";
 
 export default function MyPage() {
   const { user } = useAuthState();

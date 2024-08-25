@@ -1,10 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Product } from "../types/Product";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { getItemsByCategory } from "../api/getItemsByCategory";
-import { CartContext } from "../contexts/CartContext";
+
 import { auth } from "../api/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useRecoilState } from "recoil";
+import cartAtom from "../recoil/cart/cartAtom";
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -13,13 +15,11 @@ const ProductDetail = () => {
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const cartContext = useContext(CartContext);
+  const [cart, setCart] = useRecoilState(cartAtom);
   const [userId, setUserId] = useState<string | null>(null);
 
   // 장바구니에 현재 상품이 담겨 있는지 확인
-  const isInCart = cartContext?.cart?.some(
-    (item) => item.id === product.productId
-  );
+  const isInCart = cart.some((item) => item.id === product.productId);
 
   useEffect(() => {
     // 현재 로그인한 사용자의 정보를 가져옴
@@ -62,22 +62,16 @@ const ProductDetail = () => {
   const handleAddToCart = async () => {
     if (userId) {
       // 로그인한 사용자인 경우
-      if (cartContext?.dispatch) {
-        cartContext.dispatch({
-          type: "ADD_TO_CART",
-          payload: {
-            id: product.productId,
-            title: product.productName,
-            price: product.productPrice,
-            quantity,
-            imageUrl: product.productImageUrls
-              ? product.productImageUrls[0]
-              : "",
-            sellerId: product.sellerId,
-            productStock: product.productStock,
-          },
-        });
-      }
+      const newItem = {
+        id: product.productId,
+        title: product.productName,
+        price: product.productPrice,
+        quantity,
+        imageUrl: product.productImageUrls ? product.productImageUrls[0] : "",
+        sellerId: product.sellerId,
+        productStock: product.productStock,
+      };
+      setCart((prev) => [...prev, newItem]);
     } else {
       // 로그인하지 않은 사용자인 경우
       navigate("/login");
